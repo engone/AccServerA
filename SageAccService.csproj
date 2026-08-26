@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{4EBEE9D8-5D94-41D7-B280-64C53C68AA3C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Infosciences.Sage</RootNamespace>
+    <AssemblyName>SageAccService</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AccountingObjects">
+      <HintPath>..\..\..\..\Applications\AccServer\bin\AccountingObjects.dll</HintPath>
+    </Reference>
+    <Reference Include="AccServicesLib">
+      <HintPath>..\..\..\..\Applications\AccServer\bin\AccServicesLib.dll</HintPath>
+    </Reference>
+    <Reference Include="AuthObjects" />
+    <Reference Include="BindingListViews" />
+    <Reference Include="INIFileParser" />
+    <Reference Include="IsAttributesLib" />
+    <Reference Include="ITPVSLib35" />
+    <Reference Include="Microsoft.SqlServer.ConnectionInfo" />
+    <Reference Include="Microsoft.SqlServer.Smo" />
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="PortableAuthLib" />
+    <Reference Include="SageNetLib">
+      <HintPath>..\..\..\..\Applications\AccServer\bin\SageNetLib.dll</HintPath>
+    </Reference>
+    <Reference Include="SqlDataServicesNet" />
+    <Reference Include="SqlObjects" />
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.DirectoryServices" />
+    <Reference Include="System.ServiceModel" />
+  </ItemGroup>
+  <ItemGroup>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="acAction.cs" />
+    <Compile Include="acAction_Collection.cs" />
+    <Compile Include="acAction_Table.cs" />
+    <Compile Include="acSession.cs" />
+    <Compile Include="acSession_Collection.cs" />
+    <Compile Include="acSession_Table.cs" />
+    <Compile Include="AuthManager.cs" />
+    <Compile Include="COLID_acAction_Table.cs" />
+    <Compile Include="COLID_acSession_Table.cs" />
+    <Compile Include="CompletedAsyncResult.cs" />
+    <Compile Include="glQryInfo.cs" />
+    <Compile Include="My\MyApplication.cs" />
+    <Compile Include="My\MyComputer.cs" />
+    <Compile Include="My\MyProject.cs" />
+    <Compile Include="My\MySettings.Designer.cs">
+      <DependentUpon>MySettings.settings</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="My\MySettingsProperty.cs" />
+    <Compile Include="My\Resources\Resources.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SageAccService.cs" />
+    <Compile Include="Scripter.cs" />
+    <Compile Include="TransactionLogService.cs" />
+    <Compile Include="Utils.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources.resources" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="My\MySettings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>MySettings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
