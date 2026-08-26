@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Data;
 using System.Text;
 using Microsoft.SqlServer.Management.Smo;
@@ -7,10 +7,8 @@ using Microsoft.VisualBasic.CompilerServices;
 
 namespace Infosciences.Sage
 {
-	// Token: 0x02000014 RID: 20
 	public class Scripter
 	{
-		// Token: 0x06000106 RID: 262 RVA: 0x0000AE50 File Offset: 0x00009050
 		public static int ExecuterScript(string ServerInstanceName, string DatabaseName, string ScriptText)
 		{
 			bool flag = true;
@@ -79,8 +77,6 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x06000107 RID: 263 RVA: 0x0000AFCC File Offset: 0x000091CC
 		private void ValidateServerName(string m_ServerName)
 		{
 			try
@@ -105,10 +101,6 @@ namespace Infosciences.Sage
 			{
 			}
 		}
-
-		// Token: 0x1700002D RID: 45
-		// (get) Token: 0x06000108 RID: 264 RVA: 0x0000B04C File Offset: 0x0000924C
-		// (set) Token: 0x06000109 RID: 265 RVA: 0x0000B0B7 File Offset: 0x000092B7
 		public string ServerInstance
 		{
 			get
@@ -138,15 +130,11 @@ namespace Infosciences.Sage
 				this.ValidateServerName(value);
 			}
 		}
-
-		// Token: 0x0600010A RID: 266 RVA: 0x0000B0C4 File Offset: 0x000092C4
 		public bool dbExists(string m_dbName)
 		{
 			bool flag = this.m_SMOServer != null;
 			return flag && this.m_SMOServer.Databases.Contains(m_dbName);
 		}
-
-		// Token: 0x0600010B RID: 267 RVA: 0x0000B0FC File Offset: 0x000092FC
 		private bool ActivateDb(string m_dbName)
 		{
 			bool flag = true;
@@ -171,8 +159,6 @@ namespace Infosciences.Sage
 			}
 			return flag;
 		}
-
-		// Token: 0x0600010C RID: 268 RVA: 0x0000B190 File Offset: 0x00009390
 		private void BuildCommandList()
 		{
 			string[] separator = new string[]
@@ -184,8 +170,6 @@ namespace Infosciences.Sage
 			};
 			this.CommandScripts = this.m_Script.Split(separator, StringSplitOptions.RemoveEmptyEntries);
 		}
-
-		// Token: 0x0600010D RID: 269 RVA: 0x0000B1D8 File Offset: 0x000093D8
 		private string getCleanScript(string st)
 		{
 			string[] separator = new string[]
@@ -203,8 +187,6 @@ namespace Infosciences.Sage
 			}
 			return text;
 		}
-
-		// Token: 0x0600010E RID: 270 RVA: 0x0000B254 File Offset: 0x00009454
 		public void ExecuterScript(string Script)
 		{
 			this.m_Script = Script;
@@ -225,8 +207,6 @@ namespace Infosciences.Sage
 				}
 			}
 		}
-
-		// Token: 0x0600010F RID: 271 RVA: 0x0000B2F8 File Offset: 0x000094F8
 		public void ExecuteGlobalScript(string Script)
 		{
 			this.m_Script = Script;
@@ -248,37 +228,19 @@ namespace Infosciences.Sage
 				}
 			}
 		}
-
-		// Token: 0x06000110 RID: 272 RVA: 0x0000B3AC File Offset: 0x000095AC
 		public Scripter()
 		{
 		}
-
-		// Token: 0x06000111 RID: 273 RVA: 0x0000B3B6 File Offset: 0x000095B6
 		public Scripter(string instanceName)
 		{
 			this.ValidateServerName(instanceName);
 		}
-
-		// Token: 0x04000070 RID: 112
 		private SmoApplication m_SMO;
-
-		// Token: 0x04000071 RID: 113
 		private DataTable m_SMOServers;
-
-		// Token: 0x04000072 RID: 114
 		private Server m_SMOServer;
-
-		// Token: 0x04000073 RID: 115
 		private Database m_SMODB;
-
-		// Token: 0x04000074 RID: 116
 		protected string m_Script;
-
-		// Token: 0x04000075 RID: 117
 		protected string[] CommandScripts;
-
-		// Token: 0x04000076 RID: 118
 		private StringBuilder _log;
 	}
 }
