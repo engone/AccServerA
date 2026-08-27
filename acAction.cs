@@ -86,13 +86,14 @@ namespace Infosciences.Sage
         public void ImportFromObject(object source)
         {
             if (source == null) return;
-            TryImport(source, "ActionKey", value => ActionKey = (string)Convert.ChangeType(value, typeof(string)));
-            TryImport(source, "ActionType", value => ActionType = (string)Convert.ChangeType(value, typeof(string)));
-            TryImport(source, "ActionPiece", value => ActionPiece = (string)Convert.ChangeType(value, typeof(string)));
-            TryImport(source, "ActionStatus", value => ActionStatus = (bool)Convert.ChangeType(value, typeof(bool)));
-            TryImport(source, "SessionID", value => SessionID = (int)Convert.ChangeType(value, typeof(int)));
-            TryImport(source, "ActionID", value => ActionID = (int)Convert.ChangeType(value, typeof(int)));
-            TryImport(source, "ActionRetVal", value => ActionRetVal = (int)Convert.ChangeType(value, typeof(int)));
+            TryImport(source, "ActionKey", value => _ActionKey = Convert.ToString(value));
+            TryImport(source, "ActionType", value => _ActionType = Convert.ToString(value));
+            TryImport(source, "ActionPiece", value => _ActionPiece = Convert.ToString(value));
+            TryImport(source, "ActionStatus", value => _ActionStatus = Convert.ToBoolean(value));
+            TryImport(source, "SessionID", value => _SessionID = Convert.ToInt32(value));
+            TryImport(source, "SessionID_Libelle", value => SessionID_Libelle = Convert.ToString(value));
+            TryImport(source, "ActionID", value => _ActionID = Convert.ToInt32(value));
+            TryImport(source, "ActionRetVal", value => _ActionRetVal = Convert.ToInt32(value));
         }
 
         public void SetByName(string propertyName, object value)
@@ -107,7 +108,7 @@ namespace Infosciences.Sage
                 case "SESSIONID": SessionID = (int)Convert.ChangeType(value, typeof(int)); break;
                 case "ACTIONID": ActionID = (int)Convert.ChangeType(value, typeof(int)); break;
                 case "ACTIONRETVAL": ActionRetVal = (int)Convert.ChangeType(value, typeof(int)); break;
-                default: throw new ArgumentException("Propriété inconnue.", nameof(propertyName));
+                default: return;
             }
         }
 
@@ -123,7 +124,7 @@ namespace Infosciences.Sage
                 case "SESSIONID": return SessionID;
                 case "ACTIONID": return ActionID;
                 case "ACTIONRETVAL": return ActionRetVal;
-                default: throw new ArgumentException("Propriété inconnue.", nameof(propertyName));
+                default: return null;
             }
         }
 
@@ -136,8 +137,15 @@ namespace Infosciences.Sage
 
         private static void TryImport(object source, string propertyName, Action<object> assign)
         {
-            PropertyInfo property = source.GetType().GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
-            if (property != null) assign(property.GetValue(source, null));
+            try
+            {
+                PropertyInfo property = source.GetType().GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+                if (property != null) assign(property.GetValue(source, null));
+            }
+            catch (Exception)
+            {
+                // Le code VB d'origine ignorait les propriétés absentes ou incompatibles.
+            }
         }
 
         private string _ActionKey;

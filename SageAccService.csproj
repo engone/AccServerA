@@ -10,6 +10,8 @@
     <AssemblyName>SageAccService</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <LangVersion>7.3</LangVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <LangVersion>7.3</LangVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -45,7 +47,6 @@
     <Reference Include="ITPVSLib35" />
     <Reference Include="Microsoft.SqlServer.ConnectionInfo" />
     <Reference Include="Microsoft.SqlServer.Smo" />
-    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="PortableAuthLib" />
     <Reference Include="SageNetLib">
       <HintPath>..\..\..\..\Applications\AccServer\bin\SageNetLib.dll</HintPath>
@@ -58,6 +59,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.DirectoryServices" />
     <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
     <AppDesigner Include="Properties\" />

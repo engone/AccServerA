@@ -18,10 +18,7 @@ using Infosciences.Accounting.objects;
 using Infosciences.Accounting.Server;
 using Infosciences.Auth.Objects;
 using Infosciences.Auth.Portable;
-using Infosciences.Sage.My;
 using Infosciences.TPV35;
-using Microsoft.VisualBasic;
-using Microsoft.VisualBasic.CompilerServices;
 
 namespace Infosciences.Sage
 {
@@ -100,7 +97,7 @@ namespace Infosciences.Sage
 				this.InitiateService();
 			}
 			this.m_EventLog.WriteEntry("Initialisation de SageNetServices Middleware ...");
-			this._JobLog = new StringBuilder("Initialisation de SageNetServices Middleware ..." + Conversions.ToString(value));
+			this._JobLog = new StringBuilder("Initialisation de SageNetServices Middleware ..." + Convert.ToString(value));
 			this._Dossier_Courant = this.m_DossierSage;
 			this.m_oCat = new SageNetServices();
 			this.m_EventLog.WriteEntry("Connection à [" + this.m_DossierSage + " ...");
@@ -116,22 +113,20 @@ namespace Infosciences.Sage
 			}
 			else
 			{
-				this.m_EventLog.WriteEntry(string.Concat(new string[]
-				{
+				this.m_EventLog.WriteEntry(string.Concat(
 					"Connection à [",
 					this.m_DossierSage,
 					"] Workdata=[",
 					this.m_oCat.WorkData,
 					"]"
-				}));
-				this._JobLog.AppendLine(string.Concat(new string[]
-				{
+				));
+				this._JobLog.AppendLine(string.Concat(
 					"Connection à [",
 					this.m_DossierSage,
 					"] Workdata=[",
 					this.m_oCat.WorkData,
 					"]"
-				}));
+				));
 				this.m_EventLog.WriteEntry(string.Format("Format de date  {0}  {1}", this.m_oCat.getDateFormat(), this.m_oCat.DbMachine));
 				this._JobLog.AppendLine(string.Format("Format de date  {0}  {1}", this.m_oCat.getDateFormat(), this.m_oCat.DbMachine));
 				bool flag3 = this._sessionLoggerAvailable();
@@ -141,7 +136,7 @@ namespace Infosciences.Sage
 					{
 						SessionKey = this.m_DossierSage,
 						StartTime = DateAndTime.Now,
-						SessionMachine = MyProject.Computer.Name,
+						SessionMachine = Environment.MachineName,
 						SessionClientMachine = this.clientIP(),
 						SessionUser = this._instanceUserKey
 					};
@@ -545,7 +540,7 @@ namespace Infosciences.Sage
 						SageNetServices $VB$NonLocal_2 = this.m_oCat;
 						this.fnLoadEcr = ((string a0, string a1, DateTime a2, DateTime a3) => $VB$NonLocal_2.ECRITURE_LoadCollection(a0, a1, a2, a3, false, 0));
 						this.clbkLaodEcr = new AsyncCallback(this.EndEcrLaod);
-						this.fnLoadEcr.BeginInvoke(m_CodeJnal, srch, m_date1, m_date2, this.clbkLaodEcr, RuntimeHelpers.GetObjectValue(this.cbEcrObj));
+						this.fnLoadEcr.BeginInvoke(m_CodeJnal, srch, m_date1, m_date2, this.clbkLaodEcr, this.cbEcrObj);
 						this.bFnExecuting = true;
 						imputationTransmission = new ImputationTransmission
 						{
@@ -696,7 +691,7 @@ namespace Infosciences.Sage
 						this.__bImputationLoadComplete = false;
 						this._fnLoadJnal = new SageAccService.dlgt_ImputationLoadJnal(this.__ImputationTransmissionloadJnal);
 						this._clbkLoadJnal = new AsyncCallback(this.__endLoadImputationTransmissionJnal);
-						this._fnLoadJnal.BeginInvoke(m_CodeJnal, m_date1, m_date2, this._clbkLoadJnal, RuntimeHelpers.GetObjectValue(this._loadJnalBag));
+						this._fnLoadJnal.BeginInvoke(m_CodeJnal, m_date1, m_date2, this._clbkLoadJnal, this._loadJnalBag);
 						this.__bImputationLoading = true;
 						ImputationTransmission imputationTransmission2 = new ImputationTransmission
 						{
@@ -928,7 +923,7 @@ namespace Infosciences.Sage
 				bool flag3 = this.__actions != null;
 				if (flag3)
 				{
-					acAction acAction = this.__actions.First((acAction m) => Operators.CompareString(m.ActionKey, key, false) == 0 & m.ActionStatus);
+					acAction acAction = this.__actions.First((acAction m) => string.Equals(m.ActionKey, key, StringComparison.Ordinal) & m.ActionStatus);
 					bool flag4 = acAction != null;
 					if (flag4)
 					{
@@ -1010,8 +1005,7 @@ namespace Infosciences.Sage
 					{
 						foreach (clsCbEcritureComptable clsCbEcritureComptable in clsCbEcritureComptable_Collection)
 						{
-							string key = string.Concat(new string[]
-							{
+							string key = string.Concat(
 								clsCbEcritureComptable.JO_NUM.Trim(),
 								"\\",
 								clsCbEcritureComptable.CG_NUM.Trim(),
@@ -1021,7 +1015,7 @@ namespace Infosciences.Sage
 								clsCbEcritureComptable.EC_SENS.ToString(),
 								"\\",
 								clsCbEcritureComptable.EC_MONTANT.ToString()
-							});
+							);
 							acAction acAction = this.__getSuccessLog(key);
 							bool flag10 = acAction != null;
 							if (flag10)
@@ -1044,12 +1038,12 @@ namespace Infosciences.Sage
 					bool flag11 = flag9;
 					if (flag11)
 					{
-						this._transmissionLog.AppendLine("Ecriture déja transféré session [" + Conversions.ToString(acAction2.SessionID) + "]");
+						this._transmissionLog.AppendLine("Ecriture déja transféré session [" + Convert.ToString(acAction2.SessionID) + "]");
 						result = -1;
 					}
 					else
 					{
-						bool flag12 = Operators.CompareString(m_ItemObject.SectionAnalytique, string.Empty, false) != 0;
+						bool flag12 = !string.Equals(m_ItemObject.SectionAnalytique, string.Empty, StringComparison.Ordinal);
 						if (flag12)
 						{
 							try
@@ -1078,8 +1072,7 @@ namespace Infosciences.Sage
 						{
 							foreach (clsCbEcritureComptable clsCbEcritureComptable3 in clsCbEcritureComptable_Collection)
 							{
-								this.m_EventLog.WriteEntry(string.Concat(new string[]
-								{
+								this.m_EventLog.WriteEntry(string.Concat(
 									"TRANSMISSION IMPUTATIONS: ",
 									clsCbEcritureComptable3.CT_NUM,
 									":",
@@ -1087,7 +1080,7 @@ namespace Infosciences.Sage
 									"-->",
 									clsCbEcritureComptable3.EC_MONTANT.ToString(),
 									"   ..."
-								}));
+								));
 								int num = this.m_oCat.ECRITURE_INSERT(clsCbEcritureComptable3);
 								bool flag14 = this._sessionLoggerAvailable();
 								if (flag14)
@@ -1098,8 +1091,7 @@ namespace Infosciences.Sage
 									{
 										actionStatus = true;
 									}
-									string actionKey = string.Concat(new string[]
-									{
+									string actionKey = string.Concat(
 										clsCbEcritureComptable3.JO_NUM.Trim(),
 										"\\",
 										clsCbEcritureComptable3.CG_NUM.Trim(),
@@ -1109,7 +1101,7 @@ namespace Infosciences.Sage
 										clsCbEcritureComptable3.EC_SENS.ToString(),
 										"\\",
 										clsCbEcritureComptable3.EC_MONTANT.ToString()
-									});
+									);
 									acAction it = new acAction
 									{
 										SessionID = this._sessionID,
@@ -1418,7 +1410,7 @@ namespace Infosciences.Sage
 		public jobResult COMPTEGEN_WRITEX(List<CompteGeneral> m_ItemObjects, string jobkey)
 		{
 			jobResult jobResult = new jobResult();
-			bool flag = Operators.CompareString(jobkey, string.Empty, false) == 0;
+			bool flag = string.Equals(jobkey, string.Empty, StringComparison.Ordinal);
 			if (flag)
 			{
 				jobResult.jobKey = Guid.NewGuid().ToString();
@@ -1654,7 +1646,7 @@ namespace Infosciences.Sage
 			}
 			else
 			{
-				bool flag3 = Information.IsDBNull(m_ItemObject.TypeTiers);
+				bool flag3 = Convert.IsDBNull(m_ItemObject.TypeTiers);
 				if (flag3)
 				{
 					result = false;
@@ -1712,7 +1704,7 @@ namespace Infosciences.Sage
 		public jobResult TIERSCOMPTABLE_CREATEITEMX(List<TiersComptable> m_ItemObjects, string jobkey)
 		{
 			jobResult jobResult = new jobResult();
-			bool flag = Operators.CompareString(jobkey, string.Empty, false) == 0;
+			bool flag = string.Equals(jobkey, string.Empty, StringComparison.Ordinal);
 			if (flag)
 			{
 				jobResult.jobKey = Guid.NewGuid().ToString();
@@ -1766,7 +1758,7 @@ namespace Infosciences.Sage
 			}
 			else
 			{
-				bool flag3 = Information.IsDBNull(m_ItemObject.TypeTiers);
+				bool flag3 = Convert.IsDBNull(m_ItemObject.TypeTiers);
 				clsClient clsClient;
 				if (flag3)
 				{
@@ -2505,7 +2497,7 @@ namespace Infosciences.Sage
 					jobComplete = false,
 					jobKey = jobKey
 				};
-				this.fnImputationsCreationJob.BeginInvoke(imps, this.clbkImpsCreation, RuntimeHelpers.GetObjectValue(this.objImpCr));
+				this.fnImputationsCreationJob.BeginInvoke(imps, this.clbkImpsCreation, this.objImpCr);
 				Thread.Sleep(5);
 				jobImputationResult = this._jobImputationResult;
 			}
@@ -2571,8 +2563,7 @@ namespace Infosciences.Sage
 					else
 					{
 						clsCbEcritureComptable clsCbEcritureComptable = this.CONVERT_Imputation_2_clsCbEcritureComptable(m_ItemObject);
-						string text = string.Concat(new string[]
-						{
+						string text = string.Concat(
 							clsCbEcritureComptable.JO_NUM.Trim(),
 							"\\",
 							clsCbEcritureComptable.CG_NUM.Trim(),
@@ -2586,7 +2577,7 @@ namespace Infosciences.Sage
 							clsCbEcritureComptable.JM_DATE.GetHashCode().ToString(),
 							"\\",
 							clsCbEcritureComptable.EC_JOUR.ToString()
-						});
+						);
 						acAction acAction = this.__getSuccessLog(text);
 						bool flag7 = acAction != null;
 						if (flag7)
@@ -2832,7 +2823,7 @@ namespace Infosciences.Sage
 			string result;
 			if (flag)
 			{
-				result = Conversions.ToString(0);
+				result = Convert.ToString(0);
 			}
 			else
 			{
@@ -2850,7 +2841,7 @@ namespace Infosciences.Sage
 				else
 				{
 					int value = this.m_oCat.ECRITURE_FindID(ecr);
-					result = Conversions.ToString(value);
+					result = Convert.ToString(value);
 				}
 			}
 			return result;
@@ -2885,14 +2876,13 @@ namespace Infosciences.Sage
 							SessionID = this._sessionID,
 							ActionPiece = clsCbEcritureComptable.EC_PIECE,
 							ActionType = "DELETE",
-							ActionKey = string.Concat(new string[]
-							{
+							ActionKey = string.Concat(
 								clsCbEcritureComptable.JO_NUM.Trim(),
 								"\\",
 								clsCbEcritureComptable.CG_NUM.Trim(),
 								"\\",
 								clsCbEcritureComptable.EC_PIECE
-							}),
+							),
 							ActionStatus = flag,
 							ActionRetVal = num
 						};
@@ -3155,25 +3145,25 @@ namespace Infosciences.Sage
 				bool flag2 = array != null && array.GetLength(0) >= 1;
 				if (flag2)
 				{
-					soldeGeneral.ReportDebiteur = Conversions.ToDecimal(array[0][0]);
+					soldeGeneral.ReportDebiteur = Convert.ToDecimal(array[0][0]);
 				}
 				DataRow[] array2 = dataTable.Select("EC_ANTYPE=1 And EC_SENS=1");
 				bool flag3 = array2 != null && array2.GetLength(0) >= 1;
 				if (flag3)
 				{
-					soldeGeneral.REportCrediteur = Conversions.ToDecimal(array2[0][0]);
+					soldeGeneral.REportCrediteur = Convert.ToDecimal(array2[0][0]);
 				}
 				DataRow[] array3 = dataTable.Select("EC_ANTYPE=0 And EC_SENS=0");
 				bool flag4 = array3 != null && array3.GetLength(0) >= 1;
 				if (flag4)
 				{
-					soldeGeneral.MontantMouvementsDebiteurs = Conversions.ToDecimal(array3[0][0]);
+					soldeGeneral.MontantMouvementsDebiteurs = Convert.ToDecimal(array3[0][0]);
 				}
 				DataRow[] array4 = dataTable.Select("EC_ANTYPE=0 And EC_SENS=1");
 				bool flag5 = array4 != null && array4.GetLength(0) >= 1;
 				if (flag5)
 				{
-					soldeGeneral.MontantMouvementsCrediteurs = Conversions.ToDecimal(array4[0][0]);
+					soldeGeneral.MontantMouvementsCrediteurs = Convert.ToDecimal(array4[0][0]);
 				}
 				decimal num = decimal.Add(soldeGeneral.ReportDebiteur, soldeGeneral.MontantMouvementsDebiteurs);
 				decimal num2 = decimal.Add(soldeGeneral.REportCrediteur, soldeGeneral.MontantMouvementsCrediteurs);
@@ -3198,10 +3188,10 @@ namespace Infosciences.Sage
 				foreach (object obj in m_tb.Rows)
 				{
 					DataRow dataRow = (DataRow)obj;
-					bool flag = !dictionary.ContainsKey(Conversions.ToString(dataRow[1]).Trim());
+					bool flag = !dictionary.ContainsKey(Convert.ToString(dataRow[1]).Trim());
 					if (flag)
 					{
-						dictionary.Add(Conversions.ToString(dataRow[1]).Trim(), dataRow);
+						dictionary.Add(Convert.ToString(dataRow[1]).Trim(), dataRow);
 					}
 				}
 			}
@@ -3235,17 +3225,17 @@ namespace Infosciences.Sage
 								bool flag5 = m_tb.Columns.Count >= 7;
 								if (flag5)
 								{
-									soldeGeneral.NomCompte = Conversions.ToString(array[0][6]);
+									soldeGeneral.NomCompte = Convert.ToString(array[0][6]);
 								}
 								bool flag6 = m_tb.Columns.Count >= 8;
 								if (flag6)
 								{
-									soldeGeneral.PhoneCompte = Conversions.ToString(array[0][7]);
+									soldeGeneral.PhoneCompte = Convert.ToString(array[0][7]);
 								}
 								bool flag7 = m_tb.Columns.Count >= 9;
 								if (flag7)
 								{
-									soldeGeneral.emailCompte = Conversions.ToString(array[0][8]);
+									soldeGeneral.emailCompte = Convert.ToString(array[0][8]);
 								}
 							}
 							foreach (DataRow dataRow2 in array)
@@ -3254,7 +3244,7 @@ namespace Infosciences.Sage
 								if (flag8)
 								{
 									SoldeGeneral soldeGeneral2;
-									(soldeGeneral2 = soldeGeneral).ReportDebiteur = Conversions.ToDecimal(Operators.AddObject(soldeGeneral2.ReportDebiteur, dataRow2[3]));
+									(soldeGeneral2 = soldeGeneral).ReportDebiteur = soldeGeneral2.ReportDebiteur + Convert.ToDecimal(dataRow2[3]);
 								}
 							}
 						}
@@ -3268,17 +3258,17 @@ namespace Infosciences.Sage
 								bool flag11 = m_tb.Columns.Count >= 7;
 								if (flag11)
 								{
-									soldeGeneral.NomCompte = Conversions.ToString(array3[0][6]);
+									soldeGeneral.NomCompte = Convert.ToString(array3[0][6]);
 								}
 								bool flag12 = m_tb.Columns.Count >= 8;
 								if (flag12)
 								{
-									soldeGeneral.PhoneCompte = Conversions.ToString(array3[0][7]);
+									soldeGeneral.PhoneCompte = Convert.ToString(array3[0][7]);
 								}
 								bool flag13 = m_tb.Columns.Count >= 9;
 								if (flag13)
 								{
-									soldeGeneral.emailCompte = Conversions.ToString(array3[0][8]);
+									soldeGeneral.emailCompte = Convert.ToString(array3[0][8]);
 								}
 							}
 						}
@@ -3288,7 +3278,7 @@ namespace Infosciences.Sage
 							if (flag14)
 							{
 								SoldeGeneral soldeGeneral2;
-								(soldeGeneral2 = soldeGeneral).REportCrediteur = Conversions.ToDecimal(Operators.AddObject(soldeGeneral2.REportCrediteur, dataRow3[3]));
+								(soldeGeneral2 = soldeGeneral).REportCrediteur = soldeGeneral2.REportCrediteur + Convert.ToDecimal(dataRow3[3]);
 							}
 						}
 						DataRow[] array5 = m_tb.Select("COMPTE='" + text + "' AND (EC_ANTYPE=0 AND JO_NUM<>'RAN') And EC_SENS=0");
@@ -3301,7 +3291,7 @@ namespace Infosciences.Sage
 								if (flag16)
 								{
 									SoldeGeneral soldeGeneral2;
-									(soldeGeneral2 = soldeGeneral).MontantMouvementsDebiteurs = Conversions.ToDecimal(Operators.AddObject(soldeGeneral2.MontantMouvementsDebiteurs, dataRow4[3]));
+									(soldeGeneral2 = soldeGeneral).MontantMouvementsDebiteurs = soldeGeneral2.MontantMouvementsDebiteurs + Convert.ToDecimal(dataRow4[3]);
 								}
 							}
 							bool flag17 = string.IsNullOrEmpty(soldeGeneral.NomCompte);
@@ -3310,17 +3300,17 @@ namespace Infosciences.Sage
 								bool flag18 = m_tb.Columns.Count >= 7;
 								if (flag18)
 								{
-									soldeGeneral.NomCompte = Conversions.ToString(array5[0][6]);
+									soldeGeneral.NomCompte = Convert.ToString(array5[0][6]);
 								}
 								bool flag19 = m_tb.Columns.Count >= 8;
 								if (flag19)
 								{
-									soldeGeneral.PhoneCompte = Conversions.ToString(array5[0][7]);
+									soldeGeneral.PhoneCompte = Convert.ToString(array5[0][7]);
 								}
 								bool flag20 = m_tb.Columns.Count >= 9;
 								if (flag20)
 								{
-									soldeGeneral.emailCompte = Conversions.ToString(array5[0][8]);
+									soldeGeneral.emailCompte = Convert.ToString(array5[0][8]);
 								}
 							}
 						}
@@ -3334,17 +3324,17 @@ namespace Infosciences.Sage
 								bool flag23 = m_tb.Columns.Count >= 7;
 								if (flag23)
 								{
-									soldeGeneral.NomCompte = Conversions.ToString(array7[0][6]);
+									soldeGeneral.NomCompte = Convert.ToString(array7[0][6]);
 								}
 								bool flag24 = m_tb.Columns.Count >= 8;
 								if (flag24)
 								{
-									soldeGeneral.PhoneCompte = Conversions.ToString(array7[0][7]);
+									soldeGeneral.PhoneCompte = Convert.ToString(array7[0][7]);
 								}
 								bool flag25 = m_tb.Columns.Count >= 9;
 								if (flag25)
 								{
-									soldeGeneral.emailCompte = Conversions.ToString(array7[0][8]);
+									soldeGeneral.emailCompte = Convert.ToString(array7[0][8]);
 								}
 							}
 						}
@@ -3354,7 +3344,7 @@ namespace Infosciences.Sage
 							if (flag26)
 							{
 								SoldeGeneral soldeGeneral2;
-								(soldeGeneral2 = soldeGeneral).MontantMouvementsCrediteurs = Conversions.ToDecimal(Operators.AddObject(soldeGeneral2.MontantMouvementsCrediteurs, dataRow5[3]));
+								(soldeGeneral2 = soldeGeneral).MontantMouvementsCrediteurs = soldeGeneral2.MontantMouvementsCrediteurs + Convert.ToDecimal(dataRow5[3]);
 							}
 						}
 						decimal num = decimal.Add(soldeGeneral.ReportDebiteur, soldeGeneral.MontantMouvementsDebiteurs);
@@ -3407,25 +3397,25 @@ namespace Infosciences.Sage
 				bool flag2 = array != null && array.GetLength(0) >= 1;
 				if (flag2)
 				{
-					soldeGeneral.ReportDebiteur = Conversions.ToDecimal(array[0][0]);
+					soldeGeneral.ReportDebiteur = Convert.ToDecimal(array[0][0]);
 				}
 				DataRow[] array2 = dataTable.Select("EC_ANTYPE=1 And EC_SENS=1");
 				bool flag3 = array2 != null && array2.GetLength(0) >= 1;
 				if (flag3)
 				{
-					soldeGeneral.REportCrediteur = Conversions.ToDecimal(array2[0][0]);
+					soldeGeneral.REportCrediteur = Convert.ToDecimal(array2[0][0]);
 				}
 				DataRow[] array3 = dataTable.Select("EC_ANTYPE=0 And EC_SENS=0");
 				bool flag4 = array3 != null && array3.GetLength(0) >= 1;
 				if (flag4)
 				{
-					soldeGeneral.MontantMouvementsDebiteurs = Conversions.ToDecimal(array3[0][0]);
+					soldeGeneral.MontantMouvementsDebiteurs = Convert.ToDecimal(array3[0][0]);
 				}
 				DataRow[] array4 = dataTable.Select("EC_ANTYPE=0 And EC_SENS=1");
 				bool flag5 = array4 != null && array4.GetLength(0) >= 1;
 				if (flag5)
 				{
-					soldeGeneral.MontantMouvementsCrediteurs = Conversions.ToDecimal(array4[0][0]);
+					soldeGeneral.MontantMouvementsCrediteurs = Convert.ToDecimal(array4[0][0]);
 				}
 				decimal num = decimal.Add(soldeGeneral.ReportDebiteur, soldeGeneral.MontantMouvementsDebiteurs);
 				decimal num2 = decimal.Add(soldeGeneral.REportCrediteur, soldeGeneral.MontantMouvementsCrediteurs);
@@ -3688,7 +3678,7 @@ namespace Infosciences.Sage
 				{
 					PortableLoginService oLib = this.SecManager.oLib;
 					string text = oLib.User_from_psswd(m_pwd);
-					bool flag4 = Operators.CompareString(text, string.Empty, false) != 0;
+					bool flag4 = !string.Equals(text, string.Empty, StringComparison.Ordinal);
 					if (flag4)
 					{
 						this._UserLogged = true;
@@ -3747,10 +3737,10 @@ namespace Infosciences.Sage
 				string message = ex.Message;
 				text2 = "";
 			}
-			bool flag = Operators.CompareString(text2, string.Empty, false) == 0;
+			bool flag = string.Equals(text2, string.Empty, StringComparison.Ordinal);
 			if (flag)
 			{
-				text = "WinNT://" + MyProject.Computer.Name;
+				text = "WinNT://" + Environment.MachineName;
 				text2 = "(local)";
 				this.m_EventLog.WriteEntry(string.Format("downLoadSystemUsers: Not Found domain {0} ", text2));
 			}
@@ -3803,8 +3793,8 @@ namespace Infosciences.Sage
 						SearchResult searchResult = (SearchResult)obj;
 						ISApplicationUser isapplicationUser = new ISApplicationUser();
 						DirectoryEntry directoryEntry = searchResult.GetDirectoryEntry();
-						isapplicationUser.USERCODE = Conversions.ToString(directoryEntry.Properties["SAMAccountName"].Value);
-						isapplicationUser.USERFULLNAME = Conversions.ToString(directoryEntry.Properties["sn"].Value);
+						isapplicationUser.USERCODE = Convert.ToString(directoryEntry.Properties["SAMAccountName"].Value);
+						isapplicationUser.USERFULLNAME = Convert.ToString(directoryEntry.Properties["sn"].Value);
 						list.Add(isapplicationUser);
 					}
 				}
@@ -3993,7 +3983,7 @@ namespace Infosciences.Sage
 			}
 			else
 			{
-				bool flag2 = Operators.CompareString(userKey, right, false) == 0;
+				bool flag2 = string.Equals(userKey, right, StringComparison.Ordinal);
 				if (flag2)
 				{
 					result = new bool[][]
@@ -4016,11 +4006,11 @@ namespace Infosciences.Sage
 				else
 				{
 					string left = this._getUserRoleForApplication(userKey);
-					if (Operators.CompareString(left, "_APP_ADMINS", false) != 0)
+					if (!string.Equals(left, "_APP_ADMINS", StringComparison.Ordinal))
 					{
-						if (Operators.CompareString(left, "_APP_ALL_DOMAINS", false) != 0)
+						if (!string.Equals(left, "_APP_ALL_DOMAINS", StringComparison.Ordinal))
 						{
-							if (Operators.CompareString(left, "APP_CLIENT_DOMAIN", false) != 0)
+							if (!string.Equals(left, "APP_CLIENT_DOMAIN", StringComparison.Ordinal))
 							{
 								result = new bool[][]
 								{
@@ -4372,7 +4362,7 @@ namespace Infosciences.Sage
 						this.__bGLLoadComplete = false;
 						this._fnLoadGLAcc = new SageAccService.dlgt_GLLoadAcc(this._gl_CalculerCompte);
 						this._clbkLoadJnal = new AsyncCallback(this._endGL_CalculerCompte);
-						this._fnLoadGLAcc.BeginInvoke(m_Acct, m_typeTiers, m_Date1, m_Date2, this._clbkLoadGL, RuntimeHelpers.GetObjectValue(this._loadGLBag));
+						this._fnLoadGLAcc.BeginInvoke(m_Acct, m_typeTiers, m_Date1, m_Date2, this._clbkLoadGL, this._loadGLBag);
 						this.__bGLLoading = true;
 						List<LigneGL> list2 = new List<LigneGL>
 						{
@@ -4428,7 +4418,7 @@ namespace Infosciences.Sage
 						this.__bGLLoadComplete = false;
 						this._fnLoadGL = new SageAccService.dlgt_GLLoad(this._gl_calculer);
 						this._clbkLoadJnal = new AsyncCallback(this._endGL_Calculer);
-						this._fnLoadGL.BeginInvoke(m_typeTiers, m_Date1, m_Date2, this._clbkLoadGL, RuntimeHelpers.GetObjectValue(this._loadGLBag));
+						this._fnLoadGL.BeginInvoke(m_typeTiers, m_Date1, m_Date2, this._clbkLoadGL, this._loadGLBag);
 						this.__bGLLoading = true;
 						List<LigneGL> list2 = new List<LigneGL>
 						{

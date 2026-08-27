@@ -2,11 +2,9 @@ using System;
 using System.IO;
 using IniParser;
 using IniParser.Model;
-using Microsoft.VisualBasic.CompilerServices;
 
 namespace Infosciences.Sage
 {
-	[StandardModule]
 	internal sealed class Utils
 	{
 		public static void SaveMaxRets(int _docmaxrets)

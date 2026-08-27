@@ -28,7 +28,9 @@ namespace Infosciences.Sage
 
         public object[] GetByNameArray(string propertyName)
         {
-            return this.Select(item => item.GetByName(propertyName)).ToArray();
+            var values = new object[Count + 1];
+            for (int index = 0; index < Count; index++) values[index] = this[index].GetByName(propertyName);
+            return values;
         }
 
         public void LoadData(DataTable table)

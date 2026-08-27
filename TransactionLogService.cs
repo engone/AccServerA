@@ -2,173 +2,69 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Runtime.CompilerServices;
+using System.Resources;
 using InfoSciences;
 using InfoSciences.DataLayers;
-using Infosciences.Sage.My;
-using Infosciences.Sage.My.Resources;
 using IniParser;
 using IniParser.Model;
 using Microsoft.SqlServer.Management.Smo;
-using Microsoft.VisualBasic.CompilerServices;
 
 namespace Infosciences.Sage
 {
 	public class TransactionLogService
 	{
+		private static readonly ResourceManager ResourceManager =
+			new ResourceManager("Infosciences.Sage.Resources", typeof(TransactionLogService).Assembly);
 		public bool CheckDSLink()
 		{
 			bool flag = this.m_oDataLink != null;
 			return flag && this.m_oDataLink.TableExists("acAction");
 		}
-		private string BuildValueListString(object m_it, string[] maFields)
+		private string BuildValueListString(object item, string[] fields)
 		{
-			string text = maFields[0];
-			SqlDataServices oDataLink = this.m_oDataLink;
-			object[] array;
-			bool[] array2;
-			object obj = NewLateBinding.LateGet(m_it, null, "getbyname", array = new object[]
+			if (item == null) throw new ArgumentNullException(nameof(item));
+			if (fields == null || fields.Length == 0) throw new ArgumentException("La liste des champs est vide.", nameof(fields));
+
+			var values = new string[fields.Length];
+			for (int index = 0; index < fields.Length; index++)
 			{
-				text
-			}, null, null, array2 = new bool[]
-			{
-				true
-			});
-			if (array2[0])
-			{
-				text = (string)Conversions.ChangeType(RuntimeHelpers.GetObjectValue(array[0]), typeof(string));
+				values[index] = m_oDataLink.ExprForFilters(GetValueByName(item, fields[index]));
 			}
-			string text2 = oDataLink.ExprForFilters(RuntimeHelpers.GetObjectValue(obj));
-			checked
-			{
-				int num = maFields.GetLength(0) - 1;
-				for (int i = 1; i <= num; i++)
-				{
-					text = maFields[i];
-					string str = text2;
-					string str2 = ",";
-					SqlDataServices oDataLink2 = this.m_oDataLink;
-					obj = NewLateBinding.LateGet(m_it, null, "getbyname", array = new object[]
-					{
-						text
-					}, null, null, array2 = new bool[]
-					{
-						true
-					});
-					if (array2[0])
-					{
-						text = (string)Conversions.ChangeType(RuntimeHelpers.GetObjectValue(array[0]), typeof(string));
-					}
-					text2 = str + str2 + oDataLink2.ExprForFilters(RuntimeHelpers.GetObjectValue(obj));
-				}
-				return text2;
-			}
+			return string.Join(",", values);
 		}
-		private string BuildValueListString(object m_it, string FieldList)
+
+		private string BuildValueListString(object item, string fieldList)
 		{
-			string[] array = FieldList.Split(new char[]
-			{
-				',',
-				';',
-				'|'
-			});
-			string text = array[0];
-			SqlDataServices oDataLink = this.m_oDataLink;
-			object[] array2;
-			bool[] array3;
-			object obj = NewLateBinding.LateGet(m_it, null, "getbyname", array2 = new object[]
-			{
-				text
-			}, null, null, array3 = new bool[]
-			{
-				true
-			});
-			if (array3[0])
-			{
-				text = (string)Conversions.ChangeType(RuntimeHelpers.GetObjectValue(array2[0]), typeof(string));
-			}
-			string text2 = oDataLink.ExprForFilters(RuntimeHelpers.GetObjectValue(obj));
-			checked
-			{
-				int num = array.GetLength(0) - 1;
-				for (int i = 1; i <= num; i++)
-				{
-					text = array[i];
-					string str = text2;
-					string str2 = ",";
-					SqlDataServices oDataLink2 = this.m_oDataLink;
-					obj = NewLateBinding.LateGet(m_it, null, "getbyname", array2 = new object[]
-					{
-						text
-					}, null, null, array3 = new bool[]
-					{
-						true
-					});
-					if (array3[0])
-					{
-						text = (string)Conversions.ChangeType(RuntimeHelpers.GetObjectValue(array2[0]), typeof(string));
-					}
-					text2 = str + str2 + oDataLink2.ExprForFilters(RuntimeHelpers.GetObjectValue(obj));
-				}
-				return text2;
-			}
+			return BuildValueListString(item, SplitFieldList(fieldList));
 		}
-		private string BuildUpdateValueListString(object m_it, string FieldList)
+
+		private string BuildUpdateValueListString(object item, string fieldList)
 		{
-			string[] array = FieldList.Split(new char[]
+			string[] fields = SplitFieldList(fieldList);
+			var assignments = new string[fields.Length];
+			for (int index = 0; index < fields.Length; index++)
 			{
-				',',
-				';',
-				'|'
-			});
-			string text = array[0];
-			string str = text;
-			string str2 = "=";
-			SqlDataServices oDataLink = this.m_oDataLink;
-			object[] array2;
-			bool[] array3;
-			object obj = NewLateBinding.LateGet(m_it, null, "getbyname", array2 = new object[]
-			{
-				text
-			}, null, null, array3 = new bool[]
-			{
-				true
-			});
-			if (array3[0])
-			{
-				text = (string)Conversions.ChangeType(RuntimeHelpers.GetObjectValue(array2[0]), typeof(string));
+				assignments[index] = fields[index] + "=" + m_oDataLink.ExprForFilters(GetValueByName(item, fields[index]));
 			}
-			string text2 = str + str2 + oDataLink.ExprForFilters(RuntimeHelpers.GetObjectValue(obj));
-			checked
-			{
-				int num = array.GetLength(0) - 1;
-				for (int i = 1; i <= num; i++)
-				{
-					text = array[i];
-					string[] array4 = new string[5];
-					array4[0] = text2;
-					array4[1] = ",";
-					array4[2] = text;
-					array4[3] = "=";
-					int num2 = 4;
-					SqlDataServices oDataLink2 = this.m_oDataLink;
-					obj = NewLateBinding.LateGet(m_it, null, "getbyname", array2 = new object[]
-					{
-						text
-					}, null, null, array3 = new bool[]
-					{
-						true
-					});
-					if (array3[0])
-					{
-						text = (string)Conversions.ChangeType(RuntimeHelpers.GetObjectValue(array2[0]), typeof(string));
-					}
-					array4[num2] = oDataLink2.ExprForFilters(RuntimeHelpers.GetObjectValue(obj));
-					text2 = string.Concat(array4);
-				}
-				return text2;
-			}
+			return string.Join(",", assignments);
 		}
+
+		private static string[] SplitFieldList(string fieldList)
+		{
+			if (fieldList == null) throw new ArgumentNullException(nameof(fieldList));
+			return fieldList.Split(new[] { ',', ';', '|' }, StringSplitOptions.None);
+		}
+
+		private static object GetValueByName(object item, string fieldName)
+		{
+			var method = item.GetType().GetMethod("GetByName", new[] { typeof(string) });
+			if (method == null)
+			{
+				throw new InvalidOperationException("L'objet ne fournit pas de méthode GetByName(string).");
+			}
+			return method.Invoke(item, new object[] { fieldName });
+		}
+
 		public static object ACACTION_FriendlyLabel()
 		{
 			return "Information d'action";
@@ -201,50 +97,25 @@ namespace Infosciences.Sage
 		}
 		public acAction_Collection ACACTION_LoadCollectionStartingWith(string startWith)
 		{
-			string text = string.Concat(new string[]
-			{
-				"Select ",
-				this.m_ACACTIONSelectFieldsList,
-				" From acAction",
-				this.m_ACACTIONSelectJoins,
-				"  Where (ACACTION.ActionType like '",
-				startWith,
-				"%')m_tb=m_oDatalink.RetNativesqlResults(stSql)"
-			});
-			DataTable dataTable;
-			bool flag = dataTable == null;
-			acAction_Collection result;
-			if (flag)
-			{
-				result = null;
-			}
-			else
-			{
-				bool flag2 = dataTable.Rows.Count == 0;
-				if (flag2)
-				{
-					result = null;
-				}
-				else
-				{
-					acAction_Collection acAction_Collection = new acAction_Collection();
-					acAction_Collection.LoadData(dataTable);
-					result = acAction_Collection;
-				}
-			}
-			return result;
+			string sql = "Select " + m_ACACTIONSelectFieldsList + " From acAction" + m_ACACTIONSelectJoins
+				+ " Where ACACTION.ActionType like " + m_oDataLink.ExprForFilters(startWith + "%");
+			DataTable table = m_oDataLink.retNativeSqlResults(sql);
+			if (table == null || table.Rows.Count == 0) return null;
+
+			var actions = new acAction_Collection();
+			actions.LoadData(table);
+			return actions;
 		}
 		public acAction ACACTION_LoadItem(int m_KeyVal)
 		{
-			string text = string.Concat(new string[]
-			{
+			string text = string.Concat(
 				"Select ",
 				this.m_ACACTIONSelectFieldsList,
 				" From acAction",
 				this.m_ACACTIONSelectJoins,
 				" WHERE ActionID = ",
 				this.m_oDataLink.ExprForFilters(m_KeyVal)
-			});
+			);
 			DataTable dataTable = this.m_oDataLink.retNativeSqlResults(text);
 			bool flag = dataTable == null;
 			acAction result;
@@ -270,15 +141,14 @@ namespace Infosciences.Sage
 		}
 		public acAction_Collection ACACTION_LoadSessionIDLinkedItems(int SessionID_Value)
 		{
-			string text = string.Concat(new string[]
-			{
+			string text = string.Concat(
 				"Select ",
 				this.m_ACACTIONSelectFieldsList,
 				" From acAction",
 				this.m_ACACTIONSelectJoins,
 				" WHERE SessionID= ",
 				this.m_oDataLink.ExprForFilters(SessionID_Value)
-			});
+			);
 			DataTable dataTable = this.m_oDataLink.retNativeSqlResults(text);
 			bool flag = dataTable == null;
 			acAction_Collection result;
@@ -309,14 +179,13 @@ namespace Infosciences.Sage
 			{
 				foreach (acAction it in oDetails)
 				{
-					string text = string.Concat(new string[]
-					{
+					string text = string.Concat(
 						"Insert into acAction(",
 						this.m_ACACTIONInsertFieldsList,
 						") Values (",
 						this.BuildValueListString(it, this.m_ACACTIONInsertFieldsList),
 						")"
-					});
+					);
 					try
 					{
 						this.m_oDataLink.ExecuteNativeSQL(text);
@@ -423,8 +292,7 @@ namespace Infosciences.Sage
 			{
 				foreach (acAction acAction in oDetails)
 				{
-					string text = string.Concat(new string[]
-					{
+					string text = string.Concat(
 						"Insert into acAction(ActionKey,ActionType,ActionPiece,ActionStatus,SessionID,ActionID,ActionRetVal) Values (",
 						this.m_oDataLink.ExprForFilters(acAction.ActionKey),
 						",",
@@ -438,7 +306,7 @@ namespace Infosciences.Sage
 						",",
 						this.m_oDataLink.ExprForFilters(acAction.ActionID),
 						") "
-					});
+					);
 					try
 					{
 						this.m_oDataLink.ExecuteNativeSQL(text);
@@ -543,8 +411,7 @@ namespace Infosciences.Sage
 		}
 		public int ACACTION_FindId(acAction m_it)
 		{
-			string text = string.Concat(new string[]
-			{
+			string text = string.Concat(
 				"Select ActionID FROM acAction WHERE ActionKey=",
 				this.m_oDataLink.ExprForFilters(m_it.ActionKey),
 				" AND ActionType=",
@@ -555,7 +422,7 @@ namespace Infosciences.Sage
 				this.m_oDataLink.ExprForFilters(m_it.ActionStatus),
 				" AND SessionID=",
 				this.m_oDataLink.ExprForFilters(m_it.SessionID)
-			});
+			);
 			DataTable dataTable;
 			try
 			{
@@ -579,7 +446,7 @@ namespace Infosciences.Sage
 				}
 				else
 				{
-					result = Conversions.ToInteger(dataTable.Rows[0][0]);
+					result = Convert.ToInt32(dataTable.Rows[0][0]);
 				}
 			}
 			return result;
@@ -603,21 +470,18 @@ namespace Infosciences.Sage
 					enumerator.Dispose();
 				}
 			}
-			bool flag = this.ACACTION_SaveCollection(oDetails);
-			bool result;
-			return result;
+			return this.ACACTION_SaveCollection(oDetails);
 		}
 		public int ACACTION_CreateItem(acAction m_it)
 		{
 			bool flag = true;
-			string text = string.Concat(new string[]
-			{
+			string text = string.Concat(
 				"Insert into acAction(",
 				this.m_ACACTIONInsertFieldsList,
 				") Values (",
 				this.BuildValueListString(m_it, this.m_ACACTIONInsertFieldsList),
 				")"
-			});
+			);
 			try
 			{
 				this.m_oDataLink.ExecuteNativeSQL(text);
@@ -630,7 +494,7 @@ namespace Infosciences.Sage
 			int num;
 			if (flag2)
 			{
-				num = Conversions.ToInteger(this.m_oDataLink.RetNativeSqlScalar("Select Isnull(IDENT_CURRENT( 'acAction' ),0) as CURID"));
+				num = Convert.ToInt32(this.m_oDataLink.RetNativeSqlScalar("Select Isnull(IDENT_CURRENT( 'acAction' ),0) as CURID"));
 				acAction acAction = this.ACACTION_LoadItem(num);
 				bool flag3 = acAction != null;
 				if (!flag3)
@@ -644,8 +508,7 @@ namespace Infosciences.Sage
 		public bool ACACTION_UpdateItem(acAction m_it)
 		{
 			bool result = true;
-			string text = string.Concat(new string[]
-			{
+			string text = string.Concat(
 				"ActionKey=",
 				this.m_oDataLink.ExprForFilters(m_it.ActionKey),
 				",ActionType=",
@@ -656,7 +519,7 @@ namespace Infosciences.Sage
 				this.m_oDataLink.ExprForFilters(m_it.ActionStatus),
 				",SessionID=",
 				this.m_oDataLink.ExprForFilters(m_it.SessionID)
-			});
+			);
 			string text2 = "Update acAction Set " + this.BuildUpdateValueListString(m_it, this.m_ACACTIONInsertFieldsList) + " WHERE ActionID=" + this.m_oDataLink.ExprForFilters(m_it.ActionID);
 			try
 			{
@@ -700,8 +563,7 @@ namespace Infosciences.Sage
 		}
 		public acSession_Collection ACSESSION_LoadCollectionStartingWith(string startWith)
 		{
-			string text = string.Concat(new string[]
-			{
+			string text = string.Concat(
 				"Select ",
 				this.m_ACSESSIONSelectFieldsList,
 				" From acSession",
@@ -709,7 +571,7 @@ namespace Infosciences.Sage
 				" Where (ACSESSION.SessionUser like '",
 				startWith,
 				"%') "
-			});
+			);
 			DataTable dataTable = this.m_oDataLink.retNativeSqlResults(text);
 			bool flag = dataTable == null;
 			acSession_Collection result;
@@ -735,15 +597,14 @@ namespace Infosciences.Sage
 		}
 		public acSession ACSESSION_LoadItem(int m_KeyVal)
 		{
-			string text = string.Concat(new string[]
-			{
+			string text = string.Concat(
 				"Select ",
 				this.m_ACSESSIONSelectFieldsList,
 				" From acSession",
 				this.m_ACSESSIONSelectJoins,
 				" WHERE SessionID = ",
 				this.m_oDataLink.ExprForFilters(m_KeyVal)
-			});
+			);
 			DataTable dataTable = this.m_oDataLink.retNativeSqlResults(text);
 			bool flag = dataTable == null;
 			acSession result;
@@ -774,14 +635,13 @@ namespace Infosciences.Sage
 			{
 				foreach (acSession it in oDetails)
 				{
-					string text = string.Concat(new string[]
-					{
+					string text = string.Concat(
 						"Insert into acSession(",
 						this.m_ACSESSIONInsertFieldsList,
 						") Values (",
 						this.BuildValueListString(it, this.m_ACSESSIONInsertFieldsList),
 						")"
-					});
+					);
 					try
 					{
 						this.m_oDataLink.ExecuteNativeSQL(text);
@@ -894,8 +754,7 @@ namespace Infosciences.Sage
 						string text = "SET IDENTITY_INSERT acSession ON ";
 						this.m_oDataLink.ExecuteNativeSQL(text);
 					}
-					string text2 = string.Concat(new string[]
-					{
+					string text2 = string.Concat(
 						"Insert into acSession(SessionKey,SessionID,StartTime,SessionUser,SessionMachine,SessionClientMachine) Values (",
 						this.m_oDataLink.ExprForFilters(acSession.SessionKey),
 						",",
@@ -909,7 +768,7 @@ namespace Infosciences.Sage
 						",",
 						this.m_oDataLink.ExprForFilters(acSession.SessionClientMachine),
 						") "
-					});
+					);
 					try
 					{
 						this.m_oDataLink.ExecuteNativeSQL(text2);
@@ -994,8 +853,7 @@ namespace Infosciences.Sage
 		}
 		public int ACSESSION_FindId(acSession m_it)
 		{
-			string text = string.Concat(new string[]
-			{
+			string text = string.Concat(
 				"Select SessionID FROM acSession WHERE SessionKey=",
 				this.m_oDataLink.ExprForFilters(m_it.SessionKey),
 				" AND StartTime=",
@@ -1006,7 +864,7 @@ namespace Infosciences.Sage
 				this.m_oDataLink.ExprForFilters(m_it.SessionMachine),
 				" AND SessionClientMachine=",
 				this.m_oDataLink.ExprForFilters(m_it.SessionClientMachine)
-			});
+			);
 			DataTable dataTable;
 			try
 			{
@@ -1030,7 +888,7 @@ namespace Infosciences.Sage
 				}
 				else
 				{
-					result = Conversions.ToInteger(dataTable.Rows[0][0]);
+					result = Convert.ToInt32(dataTable.Rows[0][0]);
 				}
 			}
 			return result;
@@ -1038,14 +896,13 @@ namespace Infosciences.Sage
 		public int ACSESSION_CreateItem(acSession m_it)
 		{
 			bool flag = true;
-			string text = string.Concat(new string[]
-			{
+			string text = string.Concat(
 				"Insert into acSession(",
 				this.m_ACSESSIONInsertFieldsList,
 				") Values (",
 				this.BuildValueListString(m_it, this.m_ACSESSIONInsertFieldsList),
 				")"
-			});
+			);
 			try
 			{
 				this.m_oDataLink.ExecuteNativeSQL(text);
@@ -1058,7 +915,7 @@ namespace Infosciences.Sage
 			int num;
 			if (flag2)
 			{
-				num = Conversions.ToInteger(this.m_oDataLink.RetNativeSqlScalar("Select Isnull(IDENT_CURRENT( 'acSession' ),0) as CURID"));
+				num = Convert.ToInt32(this.m_oDataLink.RetNativeSqlScalar("Select Isnull(IDENT_CURRENT( 'acSession' ),0) as CURID"));
 				acSession acSession = this.ACSESSION_LoadItem(num);
 				bool flag3 = acSession != null;
 				if (!flag3)
@@ -1072,8 +929,7 @@ namespace Infosciences.Sage
 		public bool ACSESSION_UpdateItem(acSession m_it)
 		{
 			bool result = true;
-			string text = string.Concat(new string[]
-			{
+			string text = string.Concat(
 				"SessionKey=",
 				this.m_oDataLink.ExprForFilters(m_it.SessionKey),
 				",StartTime=",
@@ -1084,7 +940,7 @@ namespace Infosciences.Sage
 				this.m_oDataLink.ExprForFilters(m_it.SessionMachine),
 				",SessionClientMachine=",
 				this.m_oDataLink.ExprForFilters(m_it.SessionClientMachine)
-			});
+			);
 			string text2 = "Update acSession Set " + this.BuildUpdateValueListString(m_it, this.m_ACSESSIONInsertFieldsList) + " WHERE SessionID=" + this.m_oDataLink.ExprForFilters(m_it.SessionID);
 			try
 			{
@@ -1139,7 +995,7 @@ namespace Infosciences.Sage
 		}
 		private void __writeIniOption(string section, string key, string value)
 		{
-			string path = MyProject.Computer.FileSystem.SpecialDirectories.AllUsersApplicationData + "\\_acctransactionLogService.ini";
+			string path = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\_acctransactionLogService.ini";
 			FileIniDataParser fileIniDataParser = new FileIniDataParser();
 			IniData iniData = new IniData();
 			SectionData sectionData = new SectionData(section);
@@ -1168,7 +1024,7 @@ namespace Infosciences.Sage
 		}
 		private string __ReadIniOption(string section, string key, string DefaultValue = "")
 		{
-			string path = MyProject.Computer.FileSystem.SpecialDirectories.AllUsersApplicationData + "\\_acctransactionLogService.ini";
+			string path = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\_acctransactionLogService.ini";
 			FileIniDataParser fileIniDataParser = new FileIniDataParser();
 			IniData iniData;
 			try
@@ -1267,9 +1123,9 @@ namespace Infosciences.Sage
 				bool flag3 = !this._scripter.dbExists("accLogDb");
 				if (flag3)
 				{
-					string script = Resources.CreateDb;
+					string script = ResourceManager.GetString("CreateDb");
 					this._scripter.ExecuteGlobalScript(script);
-					script = Resources.AccLogDb;
+					script = ResourceManager.GetString("AccLogDb");
 					this._scripter.ExecuteGlobalScript(script);
 				}
 				result = this._scripter.dbExists("accLogDb");

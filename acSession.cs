@@ -78,12 +78,12 @@ namespace Infosciences.Sage
         public void ImportFromObject(object source)
         {
             if (source == null) return;
-            TryImport(source, "SessionKey", value => SessionKey = (string)Convert.ChangeType(value, typeof(string)));
-            TryImport(source, "SessionID", value => SessionID = (int)Convert.ChangeType(value, typeof(int)));
-            TryImport(source, "StartTime", value => StartTime = (DateTime)Convert.ChangeType(value, typeof(DateTime)));
-            TryImport(source, "SessionUser", value => SessionUser = (string)Convert.ChangeType(value, typeof(string)));
-            TryImport(source, "SessionMachine", value => SessionMachine = (string)Convert.ChangeType(value, typeof(string)));
-            TryImport(source, "SessionClientMachine", value => SessionClientMachine = (string)Convert.ChangeType(value, typeof(string)));
+            TryImport(source, "SessionKey", value => _SessionKey = Convert.ToString(value));
+            TryImport(source, "SessionID", value => _SessionID = Convert.ToInt32(value));
+            TryImport(source, "StartTime", value => _StartTime = Convert.ToDateTime(value));
+            TryImport(source, "SessionUser", value => _SessionUser = Convert.ToString(value));
+            TryImport(source, "SessionMachine", value => _SessionMachine = Convert.ToString(value));
+            TryImport(source, "SessionClientMachine", value => _SessionClientMachine = Convert.ToString(value));
         }
 
         public void SetByName(string propertyName, object value)
@@ -97,7 +97,7 @@ namespace Infosciences.Sage
                 case "SESSIONUSER": SessionUser = (string)Convert.ChangeType(value, typeof(string)); break;
                 case "SESSIONMACHINE": SessionMachine = (string)Convert.ChangeType(value, typeof(string)); break;
                 case "SESSIONCLIENTMACHINE": SessionClientMachine = (string)Convert.ChangeType(value, typeof(string)); break;
-                default: throw new ArgumentException("Propriété inconnue.", nameof(propertyName));
+                default: return;
             }
         }
 
@@ -112,7 +112,7 @@ namespace Infosciences.Sage
                 case "SESSIONUSER": return SessionUser;
                 case "SESSIONMACHINE": return SessionMachine;
                 case "SESSIONCLIENTMACHINE": return SessionClientMachine;
-                default: throw new ArgumentException("Propriété inconnue.", nameof(propertyName));
+                default: return null;
             }
         }
 
@@ -125,8 +125,15 @@ namespace Infosciences.Sage
 
         private static void TryImport(object source, string propertyName, Action<object> assign)
         {
-            PropertyInfo property = source.GetType().GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
-            if (property != null) assign(property.GetValue(source, null));
+            try
+            {
+                PropertyInfo property = source.GetType().GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+                if (property != null) assign(property.GetValue(source, null));
+            }
+            catch (Exception)
+            {
+                // Le code VB d'origine ignorait les propriétés absentes ou incompatibles.
+            }
         }
 
         private string _SessionKey;
