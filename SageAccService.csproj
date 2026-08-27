@@ -8,7 +8,8 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Infosciences.Sage</RootNamespace>
     <AssemblyName>SageAccService</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <LangVersion>7.3</LangVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -44,7 +45,6 @@
     <Reference Include="ITPVSLib35" />
     <Reference Include="Microsoft.SqlServer.ConnectionInfo" />
     <Reference Include="Microsoft.SqlServer.Smo" />
-    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="PortableAuthLib" />
     <Reference Include="SageNetLib">
       <HintPath>..\..\..\..\Applications\AccServer\bin\SageNetLib.dll</HintPath>
@@ -57,6 +57,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.DirectoryServices" />
     <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
     <AppDesigner Include="Properties\" />
@@ -73,17 +74,6 @@
     <Compile Include="COLID_acSession_Table.cs" />
     <Compile Include="CompletedAsyncResult.cs" />
     <Compile Include="glQryInfo.cs" />
-    <Compile Include="My\MyApplication.cs" />
-    <Compile Include="My\MyComputer.cs" />
-    <Compile Include="My\MyProject.cs" />
-    <Compile Include="My\MySettings.Designer.cs">
-      <DependentUpon>MySettings.settings</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-    <Compile Include="My\MySettingsProperty.cs" />
-    <Compile Include="My\Resources\Resources.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SageAccService.cs" />
     <Compile Include="Scripter.cs" />
     <Compile Include="TransactionLogService.cs" />
@@ -91,12 +81,6 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources.resources" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="My\MySettings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>MySettings.Designer.cs</LastGenOutput>
-    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

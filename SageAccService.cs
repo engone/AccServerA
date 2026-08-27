@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
@@ -18,29 +18,14 @@ using Infosciences.Accounting.objects;
 using Infosciences.Accounting.Server;
 using Infosciences.Auth.Objects;
 using Infosciences.Auth.Portable;
-using Infosciences.Sage.My;
 using Infosciences.TPV35;
-using Microsoft.VisualBasic;
-using Microsoft.VisualBasic.CompilerServices;
 
 namespace Infosciences.Sage
 {
-	// Token: 0x02000012 RID: 18
 	public class SageAccService : IAccService
 	{
-		// Token: 0x17000023 RID: 35
-		// (get) Token: 0x06000069 RID: 105 RVA: 0x0000410C File Offset: 0x0000230C
-		// (set) Token: 0x0600006A RID: 106 RVA: 0x00004116 File Offset: 0x00002316
 		private virtual EventLog m_EventLog { get; [MethodImpl(MethodImplOptions.Synchronized)] set; }
-
-		// Token: 0x17000024 RID: 36
-		// (get) Token: 0x0600006B RID: 107 RVA: 0x0000411F File Offset: 0x0000231F
-		// (set) Token: 0x0600006C RID: 108 RVA: 0x00004129 File Offset: 0x00002329
 		public string ConnectionKey { get; set; }
-
-		// Token: 0x17000025 RID: 37
-		// (get) Token: 0x0600006D RID: 109 RVA: 0x00004134 File Offset: 0x00002334
-		// (set) Token: 0x0600006E RID: 110 RVA: 0x0000414C File Offset: 0x0000234C
 		public int MAXRET
 		{
 			get
@@ -52,13 +37,9 @@ namespace Infosciences.Sage
 				this._MAXRET = value;
 			}
 		}
-
-		// Token: 0x14000001 RID: 1
 		// (add) Token: 0x0600006F RID: 111 RVA: 0x00004158 File Offset: 0x00002358
 		// (remove) Token: 0x06000070 RID: 112 RVA: 0x00004190 File Offset: 0x00002390
 		public event SageAccService.DSLinkAvailabilityChangedEventHandler DSLinkAvailabilityChanged;
-
-		// Token: 0x06000071 RID: 113 RVA: 0x000041C8 File Offset: 0x000023C8
 		private string clientIP()
 		{
 			OperationContext operationContext = OperationContext.Current;
@@ -66,8 +47,6 @@ namespace Infosciences.Sage
 			RemoteEndpointMessageProperty remoteEndpointMessageProperty = (RemoteEndpointMessageProperty)incomingMessageProperties[RemoteEndpointMessageProperty.Name];
 			return remoteEndpointMessageProperty.Address;
 		}
-
-		// Token: 0x06000072 RID: 114 RVA: 0x00004204 File Offset: 0x00002404
 		private void LoadSettings()
 		{
 			int num = Utils.LoadMaxRet();
@@ -81,14 +60,10 @@ namespace Infosciences.Sage
 				Utils.SaveMaxRets(this._DOCMAXRET);
 			}
 		}
-
-		// Token: 0x06000073 RID: 115 RVA: 0x00004238 File Offset: 0x00002438
 		public string SiteVersionNo()
 		{
 			return this.m_SiteVersion;
 		}
-
-		// Token: 0x06000074 RID: 116 RVA: 0x00004250 File Offset: 0x00002450
 		public void InitiateService()
 		{
 			this.m_EventLog = new EventLog();
@@ -101,25 +76,17 @@ namespace Infosciences.Sage
 			this.m_EventLog.Log = "accServer_Log";
 			this.LoadSettings();
 		}
-
-		// Token: 0x06000075 RID: 117 RVA: 0x000042B8 File Offset: 0x000024B8
 		private bool _sessionLoggerAvailable()
 		{
 			return false;
 		}
-
-		// Token: 0x06000076 RID: 118 RVA: 0x000042CB File Offset: 0x000024CB
 		private void _ConnectSessionLogger()
 		{
 		}
-
-		// Token: 0x06000077 RID: 119 RVA: 0x000042D0 File Offset: 0x000024D0
 		public bool IsReady()
 		{
 			return this.m_oCat.ISCPTADataLinkReady();
 		}
-
-		// Token: 0x06000078 RID: 120 RVA: 0x000042F0 File Offset: 0x000024F0
 		private SageNetServices Connect()
 		{
 			char value = '\r';
@@ -130,7 +97,7 @@ namespace Infosciences.Sage
 				this.InitiateService();
 			}
 			this.m_EventLog.WriteEntry("Initialisation de SageNetServices Middleware ...");
-			this._JobLog = new StringBuilder("Initialisation de SageNetServices Middleware ..." + Conversions.ToString(value));
+			this._JobLog = new StringBuilder("Initialisation de SageNetServices Middleware ..." + Convert.ToString(value));
 			this._Dossier_Courant = this.m_DossierSage;
 			this.m_oCat = new SageNetServices();
 			this.m_EventLog.WriteEntry("Connection à [" + this.m_DossierSage + " ...");
@@ -146,22 +113,20 @@ namespace Infosciences.Sage
 			}
 			else
 			{
-				this.m_EventLog.WriteEntry(string.Concat(new string[]
-				{
+				this.m_EventLog.WriteEntry(string.Concat(
 					"Connection à [",
 					this.m_DossierSage,
 					"] Workdata=[",
 					this.m_oCat.WorkData,
 					"]"
-				}));
-				this._JobLog.AppendLine(string.Concat(new string[]
-				{
+				));
+				this._JobLog.AppendLine(string.Concat(
 					"Connection à [",
 					this.m_DossierSage,
 					"] Workdata=[",
 					this.m_oCat.WorkData,
 					"]"
-				}));
+				));
 				this.m_EventLog.WriteEntry(string.Format("Format de date  {0}  {1}", this.m_oCat.getDateFormat(), this.m_oCat.DbMachine));
 				this._JobLog.AppendLine(string.Format("Format de date  {0}  {1}", this.m_oCat.getDateFormat(), this.m_oCat.DbMachine));
 				bool flag3 = this._sessionLoggerAvailable();
@@ -171,7 +136,7 @@ namespace Infosciences.Sage
 					{
 						SessionKey = this.m_DossierSage,
 						StartTime = DateAndTime.Now,
-						SessionMachine = MyProject.Computer.Name,
+						SessionMachine = Environment.MachineName,
 						SessionClientMachine = this.clientIP(),
 						SessionUser = this._instanceUserKey
 					};
@@ -182,8 +147,6 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x06000079 RID: 121 RVA: 0x00004588 File Offset: 0x00002788
 		private bool CheckDSLink()
 		{
 			bool flag = this.m_oCat == null && !string.IsNullOrWhiteSpace(this._Dossier_Courant);
@@ -223,9 +186,6 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x17000026 RID: 38
-		// (get) Token: 0x0600007A RID: 122 RVA: 0x0000464C File Offset: 0x0000284C
 		public string TransmissionLog
 		{
 			get
@@ -243,15 +203,11 @@ namespace Infosciences.Sage
 				return result;
 			}
 		}
-
-		// Token: 0x0600007B RID: 123 RVA: 0x0000467F File Offset: 0x0000287F
 		private void _resetLogs()
 		{
 			this._JobLog = null;
 			this._transmissionLog = null;
 		}
-
-		// Token: 0x0600007C RID: 124 RVA: 0x00004690 File Offset: 0x00002890
 		private StringBuilder _getLivingLog()
 		{
 			bool flag = this._JobLog != null;
@@ -274,8 +230,6 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x0600007D RID: 125 RVA: 0x000046D0 File Offset: 0x000028D0
 		public string LastComment()
 		{
 			bool flag = this._getLivingLog() == null;
@@ -290,14 +244,10 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x0600007E RID: 126 RVA: 0x00004704 File Offset: 0x00002904
 		public List<string> getDBLog()
 		{
 			return this.m_oCat.getCurrentSQLTextLogs();
 		}
-
-		// Token: 0x0600007F RID: 127 RVA: 0x00004724 File Offset: 0x00002924
 		public Imputation[] InterrogerCompteTiers(string m_Acct, DateTime m_Date1, DateTime m_Date2, int m_CatEcr)
 		{
 			this.m_ImputationBag = new List<Imputation>();
@@ -389,8 +339,6 @@ namespace Infosciences.Sage
 				return result;
 			}
 		}
-
-		// Token: 0x06000080 RID: 128 RVA: 0x000048D8 File Offset: 0x00002AD8
 		public Imputation[] InterrogerBKCompteTiers(string m_bkAcct, DateTime m_Date1, DateTime m_Date2, int m_CatEcr)
 		{
 			this.m_ImputationBag = new List<Imputation>();
@@ -465,8 +413,6 @@ namespace Infosciences.Sage
 				return result;
 			}
 		}
-
-		// Token: 0x06000081 RID: 129 RVA: 0x00004A30 File Offset: 0x00002C30
 		public Imputation[] InterrogerCompteGerneral(string m_Acct, DateTime m_Date1, DateTime m_Date2, int m_CatEcr)
 		{
 			this.m_ImputationBag = new List<Imputation>();
@@ -512,15 +458,11 @@ namespace Infosciences.Sage
 				return result;
 			}
 		}
-
-		// Token: 0x06000082 RID: 130 RVA: 0x00004AF8 File Offset: 0x00002CF8
 		public ImputationTransmission IMPUTATIONTRANSMISSIOM_LoadItem(string m_id)
 		{
 			ImputationTransmission result;
 			return result;
 		}
-
-		// Token: 0x06000083 RID: 131 RVA: 0x00004B08 File Offset: 0x00002D08
 		private void EndEcrLaod(IAsyncResult ar)
 		{
 			bool flag = this.fnLoadEcr != null;
@@ -553,8 +495,6 @@ namespace Infosciences.Sage
 				}
 			}
 		}
-
-		// Token: 0x06000084 RID: 132 RVA: 0x00004BC0 File Offset: 0x00002DC0
 		public ImputationTransmission IMPUTATIONTRANSMISSIOM_JnalLookup(string m_CodeJnal, string srch, DateTime m_date1, DateTime m_date2)
 		{
 			this.m_EventLog.WriteEntry(string.Format("# {4} Requete journal {0} du {1:d} au {2:d} filtre {3}", new object[]
@@ -600,7 +540,7 @@ namespace Infosciences.Sage
 						SageNetServices $VB$NonLocal_2 = this.m_oCat;
 						this.fnLoadEcr = ((string a0, string a1, DateTime a2, DateTime a3) => $VB$NonLocal_2.ECRITURE_LoadCollection(a0, a1, a2, a3, false, 0));
 						this.clbkLaodEcr = new AsyncCallback(this.EndEcrLaod);
-						this.fnLoadEcr.BeginInvoke(m_CodeJnal, srch, m_date1, m_date2, this.clbkLaodEcr, RuntimeHelpers.GetObjectValue(this.cbEcrObj));
+						this.fnLoadEcr.BeginInvoke(m_CodeJnal, srch, m_date1, m_date2, this.clbkLaodEcr, this.cbEcrObj);
 						this.bFnExecuting = true;
 						imputationTransmission = new ImputationTransmission
 						{
@@ -612,8 +552,6 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x06000085 RID: 133 RVA: 0x00004D68 File Offset: 0x00002F68
 		private int __ImputationTransmissionloadJnal(string m_CodeJnal, DateTime m_date1, DateTime m_date2)
 		{
 			bool flag = !this.CheckDSLink();
@@ -701,8 +639,6 @@ namespace Infosciences.Sage
 				return result;
 			}
 		}
-
-		// Token: 0x06000086 RID: 134 RVA: 0x00004FB4 File Offset: 0x000031B4
 		private void __endLoadImputationTransmissionJnal(IAsyncResult ar)
 		{
 			this.__bImputationLoading = false;
@@ -717,8 +653,6 @@ namespace Infosciences.Sage
 				this.__bLoadErrStat = false;
 			}
 		}
-
-		// Token: 0x06000087 RID: 135 RVA: 0x00004FF4 File Offset: 0x000031F4
 		public ImputationTransmission IMPUTATIONTRANSMISSIOM_LoadJnal(string m_CodeJnal, DateTime m_date1, DateTime m_date2)
 		{
 			bool _bImputationLoading = this.__bImputationLoading;
@@ -757,7 +691,7 @@ namespace Infosciences.Sage
 						this.__bImputationLoadComplete = false;
 						this._fnLoadJnal = new SageAccService.dlgt_ImputationLoadJnal(this.__ImputationTransmissionloadJnal);
 						this._clbkLoadJnal = new AsyncCallback(this.__endLoadImputationTransmissionJnal);
-						this._fnLoadJnal.BeginInvoke(m_CodeJnal, m_date1, m_date2, this._clbkLoadJnal, RuntimeHelpers.GetObjectValue(this._loadJnalBag));
+						this._fnLoadJnal.BeginInvoke(m_CodeJnal, m_date1, m_date2, this._clbkLoadJnal, this._loadJnalBag);
 						this.__bImputationLoading = true;
 						ImputationTransmission imputationTransmission2 = new ImputationTransmission
 						{
@@ -769,14 +703,10 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x06000088 RID: 136 RVA: 0x000050FE File Offset: 0x000032FE
 		private void _resetAccLogs()
 		{
 			this._accjobLog = accJobLog.CreateLog();
 		}
-
-		// Token: 0x06000089 RID: 137 RVA: 0x0000510C File Offset: 0x0000330C
 		public ImputationTransmission IMPUTATIONTRANSMISSION_Build2(Imputation[] m_List)
 		{
 			this._resetAccLogs();
@@ -850,8 +780,6 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x0600008A RID: 138 RVA: 0x000053B8 File Offset: 0x000035B8
 		List<Imputation> IAccService.CreateImputation(EnteteDocument m_Vente)
 		{
 			bool flag = !this.CheckDSLink();
@@ -897,8 +825,6 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x0600008B RID: 139 RVA: 0x0000558C File Offset: 0x0000378C
 		public bool ImputerVente(EnteteDocument m_Vente)
 		{
 			bool flag = !this.CheckDSLink();
@@ -921,8 +847,6 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x0600008C RID: 140 RVA: 0x000055DC File Offset: 0x000037DC
 		public ImputationTransmission IMPUTATIONTRANSMISSION_Build(List<Imputation> m_List)
 		{
 			bool flag = !this.CheckDSLink();
@@ -983,13 +907,9 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x0600008D RID: 141 RVA: 0x000042CB File Offset: 0x000024CB
 		public void IMPUTATIONTRANSMISSIOM_DeleteItem(ImputationTransmission m_Transmission)
 		{
 		}
-
-		// Token: 0x0600008E RID: 142 RVA: 0x00005770 File Offset: 0x00003970
 		private acAction __getSuccessLog(string key)
 		{
 			bool flag = this._sessionLoggerAvailable();
@@ -1003,7 +923,7 @@ namespace Infosciences.Sage
 				bool flag3 = this.__actions != null;
 				if (flag3)
 				{
-					acAction acAction = this.__actions.First((acAction m) => Operators.CompareString(m.ActionKey, key, false) == 0 & m.ActionStatus);
+					acAction acAction = this.__actions.First((acAction m) => string.Equals(m.ActionKey, key, StringComparison.Ordinal) & m.ActionStatus);
 					bool flag4 = acAction != null;
 					if (flag4)
 					{
@@ -1013,8 +933,6 @@ namespace Infosciences.Sage
 			}
 			return null;
 		}
-
-		// Token: 0x0600008F RID: 143 RVA: 0x000057F8 File Offset: 0x000039F8
 		public int IMPUTATIONTRANSMISSIOM_CreateItem(ImputationTransmission m_ItemObject)
 		{
 			this._resetLogs();
@@ -1087,8 +1005,7 @@ namespace Infosciences.Sage
 					{
 						foreach (clsCbEcritureComptable clsCbEcritureComptable in clsCbEcritureComptable_Collection)
 						{
-							string key = string.Concat(new string[]
-							{
+							string key = string.Concat(
 								clsCbEcritureComptable.JO_NUM.Trim(),
 								"\\",
 								clsCbEcritureComptable.CG_NUM.Trim(),
@@ -1098,7 +1015,7 @@ namespace Infosciences.Sage
 								clsCbEcritureComptable.EC_SENS.ToString(),
 								"\\",
 								clsCbEcritureComptable.EC_MONTANT.ToString()
-							});
+							);
 							acAction acAction = this.__getSuccessLog(key);
 							bool flag10 = acAction != null;
 							if (flag10)
@@ -1121,12 +1038,12 @@ namespace Infosciences.Sage
 					bool flag11 = flag9;
 					if (flag11)
 					{
-						this._transmissionLog.AppendLine("Ecriture déja transféré session [" + Conversions.ToString(acAction2.SessionID) + "]");
+						this._transmissionLog.AppendLine("Ecriture déja transféré session [" + Convert.ToString(acAction2.SessionID) + "]");
 						result = -1;
 					}
 					else
 					{
-						bool flag12 = Operators.CompareString(m_ItemObject.SectionAnalytique, string.Empty, false) != 0;
+						bool flag12 = !string.Equals(m_ItemObject.SectionAnalytique, string.Empty, StringComparison.Ordinal);
 						if (flag12)
 						{
 							try
@@ -1155,8 +1072,7 @@ namespace Infosciences.Sage
 						{
 							foreach (clsCbEcritureComptable clsCbEcritureComptable3 in clsCbEcritureComptable_Collection)
 							{
-								this.m_EventLog.WriteEntry(string.Concat(new string[]
-								{
+								this.m_EventLog.WriteEntry(string.Concat(
 									"TRANSMISSION IMPUTATIONS: ",
 									clsCbEcritureComptable3.CT_NUM,
 									":",
@@ -1164,7 +1080,7 @@ namespace Infosciences.Sage
 									"-->",
 									clsCbEcritureComptable3.EC_MONTANT.ToString(),
 									"   ..."
-								}));
+								));
 								int num = this.m_oCat.ECRITURE_INSERT(clsCbEcritureComptable3);
 								bool flag14 = this._sessionLoggerAvailable();
 								if (flag14)
@@ -1175,8 +1091,7 @@ namespace Infosciences.Sage
 									{
 										actionStatus = true;
 									}
-									string actionKey = string.Concat(new string[]
-									{
+									string actionKey = string.Concat(
 										clsCbEcritureComptable3.JO_NUM.Trim(),
 										"\\",
 										clsCbEcritureComptable3.CG_NUM.Trim(),
@@ -1186,7 +1101,7 @@ namespace Infosciences.Sage
 										clsCbEcritureComptable3.EC_SENS.ToString(),
 										"\\",
 										clsCbEcritureComptable3.EC_MONTANT.ToString()
-									});
+									);
 									acAction it = new acAction
 									{
 										SessionID = this._sessionID,
@@ -1219,20 +1134,14 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x06000090 RID: 144 RVA: 0x000042CB File Offset: 0x000024CB
 		public void IMPUTATIONTRANSMISSIOM_UpdateItem(ImputationTransmission m_ItemObject)
 		{
 		}
-
-		// Token: 0x06000091 RID: 145 RVA: 0x00005DCC File Offset: 0x00003FCC
 		public List<CompteGeneral> RecurseGeneralAccounts(string m_Jnal)
 		{
 			List<CompteGeneral> result;
 			return result;
 		}
-
-		// Token: 0x06000092 RID: 146 RVA: 0x00005DDC File Offset: 0x00003FDC
 		private CompteGeneral CONVERT_CompteGeneral_2_CompteGeneral(CompteGeneral m_oItem)
 		{
 			return checked(new CompteGeneral
@@ -1243,8 +1152,6 @@ namespace Infosciences.Sage
 				N_NATURE = (byte)m_oItem.NatureCompte
 			});
 		}
-
-		// Token: 0x06000093 RID: 147 RVA: 0x00005E2C File Offset: 0x0000402C
 		private CompteGeneral CONVERT_CompteGeneral_2_CompteGeneral(CompteGeneral m_oItem)
 		{
 			return new CompteGeneral
@@ -1255,8 +1162,6 @@ namespace Infosciences.Sage
 				NatureCompte = (NatureCompteEnum)m_oItem.N_NATURE
 			};
 		}
-
-		// Token: 0x06000094 RID: 148 RVA: 0x00005E7C File Offset: 0x0000407C
 		private CompteGeneral_Collection CONVERTCOLLECTION_CompteGeneral_2_CompteGeneral(List<CompteGeneral> m_oItemCol)
 		{
 			CompteGeneral_Collection compteGeneral_Collection = new CompteGeneral_Collection();
@@ -1275,8 +1180,6 @@ namespace Infosciences.Sage
 			}
 			return compteGeneral_Collection;
 		}
-
-		// Token: 0x06000095 RID: 149 RVA: 0x00005EE8 File Offset: 0x000040E8
 		private List<CompteGeneral> CONVERTCOLLECTION_CompteGeneral_2_CompteGeneral(CompteGeneral_Collection m_oItemCol)
 		{
 			List<CompteGeneral> list = new List<CompteGeneral>();
@@ -1298,8 +1201,6 @@ namespace Infosciences.Sage
 			}
 			return list;
 		}
-
-		// Token: 0x06000096 RID: 150 RVA: 0x00005F50 File Offset: 0x00004150
 		private clsClient CONVERT_TiersComptable_2_clsCLIENTS(TiersComptable m_oItem)
 		{
 			return new clsClient
@@ -1311,8 +1212,6 @@ namespace Infosciences.Sage
 				CBCT_NUM = m_oItem.cbKey
 			};
 		}
-
-		// Token: 0x06000097 RID: 151 RVA: 0x00005FAC File Offset: 0x000041AC
 		private TiersComptable CONVERT_clsCLIENTS_2_TiersComptable(clsClient m_oItem)
 		{
 			return new TiersComptable
@@ -1324,8 +1223,6 @@ namespace Infosciences.Sage
 				cbKey = m_oItem.CBCT_NUM
 			};
 		}
-
-		// Token: 0x06000098 RID: 152 RVA: 0x00006008 File Offset: 0x00004208
 		private clsClient_Collection CONVERTCOLLECTION_TiersComptable_2_clsCLIENTS(List<TiersComptable> m_oItemCol)
 		{
 			clsClient_Collection clsClient_Collection = new clsClient_Collection();
@@ -1344,8 +1241,6 @@ namespace Infosciences.Sage
 			}
 			return clsClient_Collection;
 		}
-
-		// Token: 0x06000099 RID: 153 RVA: 0x00006074 File Offset: 0x00004274
 		private List<TiersComptable> CONVERTCOLLECTION_clsCLIENTS_2_TiersComptable(clsClient_Collection m_oItemCol)
 		{
 			List<TiersComptable> list = new List<TiersComptable>();
@@ -1368,8 +1263,6 @@ namespace Infosciences.Sage
 			}
 			return list;
 		}
-
-		// Token: 0x0600009A RID: 154 RVA: 0x000060E8 File Offset: 0x000042E8
 		private clsCbEcritureComptable CONVERT_Imputation_2_clsCbEcritureComptable(Imputation m_oItem)
 		{
 			return checked(new clsCbEcritureComptable
@@ -1388,8 +1281,6 @@ namespace Infosciences.Sage
 				EC_NO = m_oItem.IdImputation
 			});
 		}
-
-		// Token: 0x0600009B RID: 155 RVA: 0x000061C4 File Offset: 0x000043C4
 		private Imputation CONVERT_clsCbEcritureComptable_2_Imputation(clsCbEcritureComptable m_oItem)
 		{
 			Imputation imputation = new Imputation();
@@ -1414,8 +1305,6 @@ namespace Infosciences.Sage
 			}
 			return imputation;
 		}
-
-		// Token: 0x0600009C RID: 156 RVA: 0x000062A4 File Offset: 0x000044A4
 		private clsCbEcritureComptable_Collection CONVERTCOLLECTION_Imputation_2_clsCbEcritureComptable(List<Imputation> m_oItemCol)
 		{
 			clsCbEcritureComptable_Collection clsCbEcritureComptable_Collection = new clsCbEcritureComptable_Collection();
@@ -1434,8 +1323,6 @@ namespace Infosciences.Sage
 			}
 			return clsCbEcritureComptable_Collection;
 		}
-
-		// Token: 0x0600009D RID: 157 RVA: 0x00006310 File Offset: 0x00004510
 		private List<Imputation> CONVERTCOLLECTION_clsCbEcritureComptable_2_Imputation(clsCbEcritureComptable_Collection m_oItemCol)
 		{
 			List<Imputation> list = new List<Imputation>();
@@ -1457,8 +1344,6 @@ namespace Infosciences.Sage
 			}
 			return list;
 		}
-
-		// Token: 0x0600009E RID: 158 RVA: 0x00006378 File Offset: 0x00004578
 		public CompteGeneral COMPTEGEN_READ(string m_code)
 		{
 			CompteGeneral compteGeneral = this.m_oCat.COMPTEG_LoadItem(m_code);
@@ -1480,8 +1365,6 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x0600009F RID: 159 RVA: 0x000063E0 File Offset: 0x000045E0
 		public bool COMPTEGEN_WRITE(CompteGeneral m_ItemObject)
 		{
 			bool result = true;
@@ -1489,8 +1372,6 @@ namespace Infosciences.Sage
 			this.m_oCat.COMPTEG_CreateItem(it);
 			return result;
 		}
-
-		// Token: 0x060000A0 RID: 160 RVA: 0x0000640C File Offset: 0x0000460C
 		private int __createAcsAction(List<CompteGeneral> m_ItemObjects)
 		{
 			bool flag = false;
@@ -1526,12 +1407,10 @@ namespace Infosciences.Sage
 				return num;
 			}
 		}
-
-		// Token: 0x060000A1 RID: 161 RVA: 0x000064AC File Offset: 0x000046AC
 		public jobResult COMPTEGEN_WRITEX(List<CompteGeneral> m_ItemObjects, string jobkey)
 		{
 			jobResult jobResult = new jobResult();
-			bool flag = Operators.CompareString(jobkey, string.Empty, false) == 0;
+			bool flag = string.Equals(jobkey, string.Empty, StringComparison.Ordinal);
 			if (flag)
 			{
 				jobResult.jobKey = Guid.NewGuid().ToString();
@@ -1564,21 +1443,15 @@ namespace Infosciences.Sage
 			}
 			return jobResult;
 		}
-
-		// Token: 0x060000A2 RID: 162 RVA: 0x00006598 File Offset: 0x00004798
 		public bool COMPTEGEN_DELETE(CompteGeneral m_ItemObject)
 		{
 			return true;
 		}
-
-		// Token: 0x060000A3 RID: 163 RVA: 0x000065B0 File Offset: 0x000047B0
 		public bool COMPTEGEN_EDIT(CompteGeneral m_ItemObject)
 		{
 			CompteGeneral it = this.CONVERT_CompteGeneral_2_CompteGeneral(m_ItemObject);
 			return this.m_oCat.COMPTEG_UpdateItem(it);
 		}
-
-		// Token: 0x060000A4 RID: 164 RVA: 0x000065DC File Offset: 0x000047DC
 		public TiersComptable[] TIERSCOMPTABLE_BagFetch()
 		{
 			bool flag = this.m_TiersBag.Count == 0;
@@ -1609,8 +1482,6 @@ namespace Infosciences.Sage
 				return result;
 			}
 		}
-
-		// Token: 0x060000A5 RID: 165 RVA: 0x00006668 File Offset: 0x00004868
 		public TiersComptable[] TIERSCOMPTABLE_LoadItems()
 		{
 			bool flag = this.m_oCat == null;
@@ -1671,8 +1542,6 @@ namespace Infosciences.Sage
 				return result;
 			}
 		}
-
-		// Token: 0x060000A6 RID: 166 RVA: 0x00006778 File Offset: 0x00004978
 		public TiersComptable[] TIERSCOMPTABLE_LoadCbItems()
 		{
 			bool flag = this.m_oCat == null;
@@ -1733,8 +1602,6 @@ namespace Infosciences.Sage
 				return result;
 			}
 		}
-
-		// Token: 0x060000A7 RID: 167 RVA: 0x00006888 File Offset: 0x00004A88
 		public TiersComptable TIERSCOMPTABLE_LoadItem(string m_itID, int m_Type)
 		{
 			bool flag = this.m_oCat == null;
@@ -1764,8 +1631,6 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x060000A8 RID: 168 RVA: 0x000068EC File Offset: 0x00004AEC
 		public bool TIERSCOMPTABLE_CreateItem(TiersComptable m_ItemObject)
 		{
 			bool flag = this.m_oCat == null;
@@ -1781,7 +1646,7 @@ namespace Infosciences.Sage
 			}
 			else
 			{
-				bool flag3 = Information.IsDBNull(m_ItemObject.TypeTiers);
+				bool flag3 = Convert.IsDBNull(m_ItemObject.TypeTiers);
 				if (flag3)
 				{
 					result = false;
@@ -1801,8 +1666,6 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x060000A9 RID: 169 RVA: 0x000069A0 File Offset: 0x00004BA0
 		private int __createAcsAction(List<TiersComptable> m_ItemObjects)
 		{
 			bool flag = false;
@@ -1838,12 +1701,10 @@ namespace Infosciences.Sage
 				return num;
 			}
 		}
-
-		// Token: 0x060000AA RID: 170 RVA: 0x00006A40 File Offset: 0x00004C40
 		public jobResult TIERSCOMPTABLE_CREATEITEMX(List<TiersComptable> m_ItemObjects, string jobkey)
 		{
 			jobResult jobResult = new jobResult();
-			bool flag = Operators.CompareString(jobkey, string.Empty, false) == 0;
+			bool flag = string.Equals(jobkey, string.Empty, StringComparison.Ordinal);
 			if (flag)
 			{
 				jobResult.jobKey = Guid.NewGuid().ToString();
@@ -1876,16 +1737,12 @@ namespace Infosciences.Sage
 			}
 			return jobResult;
 		}
-
-		// Token: 0x060000AB RID: 171 RVA: 0x00006B2C File Offset: 0x00004D2C
 		public bool TIERSCOMPTABLE_DeleteItem(TiersComptable m_ItemObject)
 		{
 			bool result = true;
 			clsClient clsClient = this.CONVERT_TiersComptable_2_clsCLIENTS(m_ItemObject);
 			return result;
 		}
-
-		// Token: 0x060000AC RID: 172 RVA: 0x00006B4C File Offset: 0x00004D4C
 		public bool TIERSCOMPTABLE_UpdateItem(TiersComptable m_ItemObject)
 		{
 			bool flag = this.m_oCat == null;
@@ -1901,7 +1758,7 @@ namespace Infosciences.Sage
 			}
 			else
 			{
-				bool flag3 = Information.IsDBNull(m_ItemObject.TypeTiers);
+				bool flag3 = Convert.IsDBNull(m_ItemObject.TypeTiers);
 				clsClient clsClient;
 				if (flag3)
 				{
@@ -1928,8 +1785,6 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x060000AD RID: 173 RVA: 0x00006C2C File Offset: 0x00004E2C
 		private JOURNAL CONVERT_Journal_2_JOURNAL(Journal m_oItem)
 		{
 			return new JOURNAL
@@ -1940,8 +1795,6 @@ namespace Infosciences.Sage
 				CG_NUM = m_oItem.CompteLie
 			};
 		}
-
-		// Token: 0x060000AE RID: 174 RVA: 0x00006C7C File Offset: 0x00004E7C
 		private Journal CONVERT_Journal_2_JOURNAL(JOURNAL m_oItem)
 		{
 			return new Journal
@@ -1952,8 +1805,6 @@ namespace Infosciences.Sage
 				CompteLie = m_oItem.CG_NUM
 			};
 		}
-
-		// Token: 0x060000AF RID: 175 RVA: 0x00006CCC File Offset: 0x00004ECC
 		private JOURNAL_Collection CONVERTCOLLECTION_Journal_2_JOURNAL(List<Journal> m_oItemCol)
 		{
 			JOURNAL_Collection journal_Collection = new JOURNAL_Collection();
@@ -1972,8 +1823,6 @@ namespace Infosciences.Sage
 			}
 			return journal_Collection;
 		}
-
-		// Token: 0x060000B0 RID: 176 RVA: 0x00006D38 File Offset: 0x00004F38
 		private List<Journal> CONVERTCOLLECTION_Journal_2_JOURNAL(JOURNAL_Collection m_oItemCol)
 		{
 			List<Journal> list = new List<Journal>();
@@ -1995,8 +1844,6 @@ namespace Infosciences.Sage
 			}
 			return list;
 		}
-
-		// Token: 0x060000B1 RID: 177 RVA: 0x00006DA0 File Offset: 0x00004FA0
 		public List<Journal> JOURNAL_LoadItems()
 		{
 			this._JobLog = new StringBuilder("Chargement journaux");
@@ -2051,20 +1898,14 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x060000B2 RID: 178 RVA: 0x00006E9C File Offset: 0x0000509C
 		public int JOURNAL_DeCloturer(string jnal, DateTime jour)
 		{
 			return this.m_oCat.ECRITURE_DeCloturer(jnal, jour);
 		}
-
-		// Token: 0x060000B3 RID: 179 RVA: 0x00006EBC File Offset: 0x000050BC
 		public int JOURNAL_Cloturer(string jnal, DateTime jour)
 		{
 			return 0;
 		}
-
-		// Token: 0x060000B4 RID: 180 RVA: 0x00006ED0 File Offset: 0x000050D0
 		public Journal JOURNAL_LoadItem(string m_itID)
 		{
 			bool flag = this.m_oCat == null;
@@ -2094,8 +1935,6 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x060000B5 RID: 181 RVA: 0x00006F34 File Offset: 0x00005134
 		public bool JOURNAL_CreateItem(Journal m_ItemObject)
 		{
 			bool flag = this.m_oCat == null;
@@ -2118,8 +1957,6 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x060000B6 RID: 182 RVA: 0x00006F94 File Offset: 0x00005194
 		public bool JOURNAL_DeleteItem(Journal m_ItemObject)
 		{
 			bool flag = this.m_oCat == null;
@@ -2141,8 +1978,6 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x060000B7 RID: 183 RVA: 0x00006FF0 File Offset: 0x000051F0
 		public bool JOURNAL_UpdateItem(Journal m_ItemObject)
 		{
 			bool flag = this.m_oCat == null;
@@ -2164,8 +1999,6 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x060000B8 RID: 184 RVA: 0x00007048 File Offset: 0x00005248
 		public LedgerMetrix JOURNAL_GetTFMetrix(string jnal, DateTime d1, DateTime d2)
 		{
 			LedgerMetrix ledgerMetrix = new LedgerMetrix();
@@ -2185,8 +2018,6 @@ namespace Infosciences.Sage
 			}
 			return ledgerMetrix;
 		}
-
-		// Token: 0x060000B9 RID: 185 RVA: 0x000070CC File Offset: 0x000052CC
 		public List<SoldeGeneral> JOURNAL_GAccounts_Totals(string jnal, DateTime d1, DateTime d2)
 		{
 			List<Tuple<string, decimal, decimal>> list = this.m_oCat.JOURNAL_Accounts_TTls(jnal, d1, d2);
@@ -2220,8 +2051,6 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x060000BA RID: 186 RVA: 0x0000717C File Offset: 0x0000537C
 		public SageAccService(string svcUserLoginOrKey)
 		{
 			this.m_SiteVersion = "14";
@@ -2251,8 +2080,6 @@ namespace Infosciences.Sage
 			this._ObeapiUrl = "http://www.infosciences.net/obe";
 			this._instanceUserKey = svcUserLoginOrKey;
 		}
-
-		// Token: 0x060000BB RID: 187 RVA: 0x00007280 File Offset: 0x00005480
 		public SageAccService()
 		{
 			this.m_SiteVersion = "14";
@@ -2281,8 +2108,6 @@ namespace Infosciences.Sage
 			this.__bGLLoadErrStat = false;
 			this._ObeapiUrl = "http://www.infosciences.net/obe";
 		}
-
-		// Token: 0x060000BC RID: 188 RVA: 0x00007380 File Offset: 0x00005580
 		public Imputation[] IMPUTATION_BagFetch()
 		{
 			bool flag = this.m_ImputationBag.Count == 0;
@@ -2313,8 +2138,6 @@ namespace Infosciences.Sage
 				return result;
 			}
 		}
-
-		// Token: 0x060000BD RID: 189 RVA: 0x0000740C File Offset: 0x0000560C
 		public Imputation[] IMPUTATION_LoadItems(string m_CodeJnal)
 		{
 			bool flag = this.m_oCat == null;
@@ -2374,8 +2197,6 @@ namespace Infosciences.Sage
 				return result;
 			}
 		}
-
-		// Token: 0x060000BE RID: 190 RVA: 0x00007568 File Offset: 0x00005768
 		public int IMPUTATION_SearchDelete(EcrMultiCritQuery qry)
 		{
 			bool flag = this.m_oCat == null;
@@ -2415,8 +2236,6 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x060000BF RID: 191 RVA: 0x0000768C File Offset: 0x0000588C
 		public Imputation[] IMPUTATION_SearchItems(EcrMultiCritQuery qry)
 		{
 			bool flag = this.m_oCat == null;
@@ -2493,8 +2312,6 @@ namespace Infosciences.Sage
 				return result;
 			}
 		}
-
-		// Token: 0x060000C0 RID: 192 RVA: 0x0000787C File Offset: 0x00005A7C
 		public decimal[] IMPUTATION_LoadTimeFramedSummary(string m_CodeJnal, DateTime m_Date1, DateTime m_Date2)
 		{
 			bool flag = this.m_oCat == null;
@@ -2551,8 +2368,6 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x060000C1 RID: 193 RVA: 0x000079A0 File Offset: 0x00005BA0
 		public Imputation[] IMPUTATION_ItemsLookup(string m_CodeJnal, string Srch, DateTime m_Date1, DateTime m_Date2)
 		{
 			bool flag = this.m_oCat == null;
@@ -2587,8 +2402,6 @@ namespace Infosciences.Sage
 				return result;
 			}
 		}
-
-		// Token: 0x060000C2 RID: 194 RVA: 0x00007A4C File Offset: 0x00005C4C
 		public Imputation[] IMPUTATION_LoadTimeFramedItems(string m_CodeJnal, DateTime m_Date1, DateTime m_Date2)
 		{
 			bool flag = this.m_oCat == null;
@@ -2623,8 +2436,6 @@ namespace Infosciences.Sage
 				return result;
 			}
 		}
-
-		// Token: 0x060000C3 RID: 195 RVA: 0x00007AF8 File Offset: 0x00005CF8
 		public Imputation IMPUTATION_LoadItem(int m_EcNo)
 		{
 			bool flag = this.m_oCat == null;
@@ -2645,8 +2456,6 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x060000C4 RID: 196 RVA: 0x00007B38 File Offset: 0x00005D38
 		private void _endImputationsCreation(IAsyncResult ar)
 		{
 			this._jobImputationResult.jobCompleteTime = DateAndTime.Now;
@@ -2667,8 +2476,6 @@ namespace Infosciences.Sage
 			}
 			this._jobImputationResult.jobIntegerValue = jobIntegerValue;
 		}
-
-		// Token: 0x060000C5 RID: 197 RVA: 0x00007BD0 File Offset: 0x00005DD0
 		public jobResult IMPUTATION_CreateItems(Imputation[] imps)
 		{
 			bool flag = imps == null;
@@ -2690,14 +2497,12 @@ namespace Infosciences.Sage
 					jobComplete = false,
 					jobKey = jobKey
 				};
-				this.fnImputationsCreationJob.BeginInvoke(imps, this.clbkImpsCreation, RuntimeHelpers.GetObjectValue(this.objImpCr));
+				this.fnImputationsCreationJob.BeginInvoke(imps, this.clbkImpsCreation, this.objImpCr);
 				Thread.Sleep(5);
 				jobImputationResult = this._jobImputationResult;
 			}
 			return jobImputationResult;
 		}
-
-		// Token: 0x060000C6 RID: 198 RVA: 0x00007C84 File Offset: 0x00005E84
 		private int _imputation_Creation_Job(IEnumerable<Imputation> imps)
 		{
 			List<clsCbEcritureComptable> list = new List<clsCbEcritureComptable>();
@@ -2718,8 +2523,6 @@ namespace Infosciences.Sage
 			}
 			return this.m_oCat.InsererEcrituresComptables(list);
 		}
-
-		// Token: 0x060000C7 RID: 199 RVA: 0x00007CF0 File Offset: 0x00005EF0
 		public int IMPUTATION_CreateItem(Imputation m_ItemObject)
 		{
 			bool flag = this.m_oCat == null;
@@ -2760,8 +2563,7 @@ namespace Infosciences.Sage
 					else
 					{
 						clsCbEcritureComptable clsCbEcritureComptable = this.CONVERT_Imputation_2_clsCbEcritureComptable(m_ItemObject);
-						string text = string.Concat(new string[]
-						{
+						string text = string.Concat(
 							clsCbEcritureComptable.JO_NUM.Trim(),
 							"\\",
 							clsCbEcritureComptable.CG_NUM.Trim(),
@@ -2775,7 +2577,7 @@ namespace Infosciences.Sage
 							clsCbEcritureComptable.JM_DATE.GetHashCode().ToString(),
 							"\\",
 							clsCbEcritureComptable.EC_JOUR.ToString()
-						});
+						);
 						acAction acAction = this.__getSuccessLog(text);
 						bool flag7 = acAction != null;
 						if (flag7)
@@ -2837,8 +2639,6 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x060000C8 RID: 200 RVA: 0x00007F5C File Offset: 0x0000615C
 		public bool IMPUTATION_DeleteItem(Imputation m_ItemObject)
 		{
 			bool flag = m_ItemObject.IdImputation > 0;
@@ -2866,20 +2666,14 @@ namespace Infosciences.Sage
 				return result;
 			}
 		}
-
-		// Token: 0x060000C9 RID: 201 RVA: 0x00008040 File Offset: 0x00006240
 		public bool Imputation_DeletePiece(int mExercice, string noPiece, string Jnal)
 		{
 			return this.m_oCat.ECRITURE_DeletePiece(mExercice, Jnal, noPiece);
 		}
-
-		// Token: 0x060000CA RID: 202 RVA: 0x00008060 File Offset: 0x00006260
 		public bool Imputation_DeletePieceTiers(int mExercice, string noPiece, string Jnal, string tiers)
 		{
 			return this.m_oCat.ECRITURE_DeletePieceCT(mExercice, Jnal, noPiece, tiers);
 		}
-
-		// Token: 0x060000CB RID: 203 RVA: 0x00008084 File Offset: 0x00006284
 		public bool Imputation_ReImputerPiece(string noPiece, string jnal, Imputation[] imputations)
 		{
 			bool flag = this.m_oCat == null;
@@ -2935,8 +2729,6 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x060000CC RID: 204 RVA: 0x0000818C File Offset: 0x0000638C
 		public bool IMPUTATION_UpdateItem(Imputation m_ItemObject)
 		{
 			bool flag = m_ItemObject.IdImputation > 0;
@@ -2975,33 +2767,21 @@ namespace Infosciences.Sage
 				return result;
 			}
 		}
-
-		// Token: 0x060000CD RID: 205 RVA: 0x000082A0 File Offset: 0x000064A0
 		public bool IMPUTATION_UpdateItemAmount(int idEc, decimal Amt)
 		{
 			return this.m_oCat.ECRITURE_UpdateAmount(idEc, Amt);
 		}
-
-		// Token: 0x17000027 RID: 39
-		// (get) Token: 0x060000CE RID: 206 RVA: 0x000082BF File Offset: 0x000064BF
-		// (set) Token: 0x060000CF RID: 207 RVA: 0x000082C9 File Offset: 0x000064C9
 		public string Dossier_Courant { get; set; }
-
-		// Token: 0x060000D0 RID: 208 RVA: 0x000082D4 File Offset: 0x000064D4
 		public bool TryLinkServer(string m_NomDossier)
 		{
 			bool result;
 			return result;
 		}
-
-		// Token: 0x060000D1 RID: 209 RVA: 0x000082E4 File Offset: 0x000064E4
 		public bool TryLinkServer(string m_NomDossier, int noVersion)
 		{
 			bool result;
 			return result;
 		}
-
-		// Token: 0x060000D2 RID: 210 RVA: 0x000082F4 File Offset: 0x000064F4
 		public bool TryXLinkServer(string m_NomDossier)
 		{
 			this.m_DossierSage = m_NomDossier;
@@ -3019,8 +2799,6 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x060000D3 RID: 211 RVA: 0x00008330 File Offset: 0x00006530
 		public bool TryXLinkServer(string m_NomDossier, int noVersion)
 		{
 			this.m_DossierSage = m_NomDossier;
@@ -3039,15 +2817,13 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x060000D4 RID: 212 RVA: 0x0000837C File Offset: 0x0000657C
 		public string IMPUTATION_GetId(Imputation m_ItemObject)
 		{
 			bool flag = m_ItemObject == null;
 			string result;
 			if (flag)
 			{
-				result = Conversions.ToString(0);
+				result = Convert.ToString(0);
 			}
 			else
 			{
@@ -3065,13 +2841,11 @@ namespace Infosciences.Sage
 				else
 				{
 					int value = this.m_oCat.ECRITURE_FindID(ecr);
-					result = Conversions.ToString(value);
+					result = Convert.ToString(value);
 				}
 			}
 			return result;
 		}
-
-		// Token: 0x060000D5 RID: 213 RVA: 0x000083EC File Offset: 0x000065EC
 		public bool IMPUTATION_DeleteID(string m_Id)
 		{
 			int num = 0;
@@ -3102,14 +2876,13 @@ namespace Infosciences.Sage
 							SessionID = this._sessionID,
 							ActionPiece = clsCbEcritureComptable.EC_PIECE,
 							ActionType = "DELETE",
-							ActionKey = string.Concat(new string[]
-							{
+							ActionKey = string.Concat(
 								clsCbEcritureComptable.JO_NUM.Trim(),
 								"\\",
 								clsCbEcritureComptable.CG_NUM.Trim(),
 								"\\",
 								clsCbEcritureComptable.EC_PIECE
-							}),
+							),
 							ActionStatus = flag,
 							ActionRetVal = num
 						};
@@ -3120,8 +2893,6 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x060000D6 RID: 214 RVA: 0x00008510 File Offset: 0x00006710
 		public List<CompteA> COMPTEA_LoadALL()
 		{
 			CbCodeAnalylique_Collection cbCodeAnalylique_Collection = this.m_oCat.CBCODEANALYTIQUE_LoadCollection();
@@ -3157,8 +2928,6 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x060000D7 RID: 215 RVA: 0x000085AC File Offset: 0x000067AC
 		public bool COMPTEA_Write(CompteA ca)
 		{
 			CbCodeAnalylique it = new CbCodeAnalylique
@@ -3180,14 +2949,10 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x060000D8 RID: 216 RVA: 0x0000861C File Offset: 0x0000681C
 		public bool COMPTEA_Delete(string c)
 		{
 			return this.m_oCat.CBCODEANALYTIQUE_DELETEItem(c);
 		}
-
-		// Token: 0x060000D9 RID: 217 RVA: 0x0000863C File Offset: 0x0000683C
 		public List<ImputationA> IMPUTATIONA_LoadItems(int ecNo)
 		{
 			ECRITUREA_Collection ecriturea_Collection = this.m_oCat.ECRITUREA_LoadEC_NOLinkedItems(ecNo);
@@ -3226,8 +2991,6 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x060000DA RID: 218 RVA: 0x00008710 File Offset: 0x00006910
 		public int IMPUTATIONA_WriteLines(int ecNo, List<ImputationA> lines)
 		{
 			clsCbEcritureComptable clsCbEcritureComptable = this.m_oCat.ECRITURE_LoadItem(ecNo);
@@ -3294,8 +3057,6 @@ namespace Infosciences.Sage
 				return result;
 			}
 		}
-
-		// Token: 0x060000DB RID: 219 RVA: 0x00008874 File Offset: 0x00006A74
 		public List<CompteGeneral> COMPTEGEN_GETITEMS(string m_Radic)
 		{
 			CompteGeneral_Collection compteGeneral_Collection = this.m_oCat.COMPTEG_LoadCollection();
@@ -3333,8 +3094,6 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x060000DC RID: 220 RVA: 0x00008934 File Offset: 0x00006B34
 		public CompteGeneral[] COMPTEGEN_GETTypeITEMS(int acType)
 		{
 			CompteGeneral_Collection compteGeneral_Collection = this.m_oCat.COMPTEG_LoadCG_TYPELinkedItems(checked((byte)acType));
@@ -3370,8 +3129,6 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x060000DD RID: 221 RVA: 0x000089D8 File Offset: 0x00006BD8
 		private SoldeGeneral _SoldesGenerauxCompteT(string m_Acct, DateTime m_Date1, DateTime m_Date2, int m_CatEcr)
 		{
 			DataTable dataTable = this.m_oCat.ECRITURE_CalculerTotauxCompte(m_Date1, m_Date2, m_Acct, true, SENS_ECR.AUCUN);
@@ -3388,25 +3145,25 @@ namespace Infosciences.Sage
 				bool flag2 = array != null && array.GetLength(0) >= 1;
 				if (flag2)
 				{
-					soldeGeneral.ReportDebiteur = Conversions.ToDecimal(array[0][0]);
+					soldeGeneral.ReportDebiteur = Convert.ToDecimal(array[0][0]);
 				}
 				DataRow[] array2 = dataTable.Select("EC_ANTYPE=1 And EC_SENS=1");
 				bool flag3 = array2 != null && array2.GetLength(0) >= 1;
 				if (flag3)
 				{
-					soldeGeneral.REportCrediteur = Conversions.ToDecimal(array2[0][0]);
+					soldeGeneral.REportCrediteur = Convert.ToDecimal(array2[0][0]);
 				}
 				DataRow[] array3 = dataTable.Select("EC_ANTYPE=0 And EC_SENS=0");
 				bool flag4 = array3 != null && array3.GetLength(0) >= 1;
 				if (flag4)
 				{
-					soldeGeneral.MontantMouvementsDebiteurs = Conversions.ToDecimal(array3[0][0]);
+					soldeGeneral.MontantMouvementsDebiteurs = Convert.ToDecimal(array3[0][0]);
 				}
 				DataRow[] array4 = dataTable.Select("EC_ANTYPE=0 And EC_SENS=1");
 				bool flag5 = array4 != null && array4.GetLength(0) >= 1;
 				if (flag5)
 				{
-					soldeGeneral.MontantMouvementsCrediteurs = Conversions.ToDecimal(array4[0][0]);
+					soldeGeneral.MontantMouvementsCrediteurs = Convert.ToDecimal(array4[0][0]);
 				}
 				decimal num = decimal.Add(soldeGeneral.ReportDebiteur, soldeGeneral.MontantMouvementsDebiteurs);
 				decimal num2 = decimal.Add(soldeGeneral.REportCrediteur, soldeGeneral.MontantMouvementsCrediteurs);
@@ -3423,8 +3180,6 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x060000DE RID: 222 RVA: 0x00008B6C File Offset: 0x00006D6C
 		private List<SoldeGeneral> _marshallResults(DataTable m_tb)
 		{
 			Dictionary<string, DataRow> dictionary = new Dictionary<string, DataRow>();
@@ -3433,10 +3188,10 @@ namespace Infosciences.Sage
 				foreach (object obj in m_tb.Rows)
 				{
 					DataRow dataRow = (DataRow)obj;
-					bool flag = !dictionary.ContainsKey(Conversions.ToString(dataRow[1]).Trim());
+					bool flag = !dictionary.ContainsKey(Convert.ToString(dataRow[1]).Trim());
 					if (flag)
 					{
-						dictionary.Add(Conversions.ToString(dataRow[1]).Trim(), dataRow);
+						dictionary.Add(Convert.ToString(dataRow[1]).Trim(), dataRow);
 					}
 				}
 			}
@@ -3470,17 +3225,17 @@ namespace Infosciences.Sage
 								bool flag5 = m_tb.Columns.Count >= 7;
 								if (flag5)
 								{
-									soldeGeneral.NomCompte = Conversions.ToString(array[0][6]);
+									soldeGeneral.NomCompte = Convert.ToString(array[0][6]);
 								}
 								bool flag6 = m_tb.Columns.Count >= 8;
 								if (flag6)
 								{
-									soldeGeneral.PhoneCompte = Conversions.ToString(array[0][7]);
+									soldeGeneral.PhoneCompte = Convert.ToString(array[0][7]);
 								}
 								bool flag7 = m_tb.Columns.Count >= 9;
 								if (flag7)
 								{
-									soldeGeneral.emailCompte = Conversions.ToString(array[0][8]);
+									soldeGeneral.emailCompte = Convert.ToString(array[0][8]);
 								}
 							}
 							foreach (DataRow dataRow2 in array)
@@ -3489,7 +3244,7 @@ namespace Infosciences.Sage
 								if (flag8)
 								{
 									SoldeGeneral soldeGeneral2;
-									(soldeGeneral2 = soldeGeneral).ReportDebiteur = Conversions.ToDecimal(Operators.AddObject(soldeGeneral2.ReportDebiteur, dataRow2[3]));
+									(soldeGeneral2 = soldeGeneral).ReportDebiteur = soldeGeneral2.ReportDebiteur + Convert.ToDecimal(dataRow2[3]);
 								}
 							}
 						}
@@ -3503,17 +3258,17 @@ namespace Infosciences.Sage
 								bool flag11 = m_tb.Columns.Count >= 7;
 								if (flag11)
 								{
-									soldeGeneral.NomCompte = Conversions.ToString(array3[0][6]);
+									soldeGeneral.NomCompte = Convert.ToString(array3[0][6]);
 								}
 								bool flag12 = m_tb.Columns.Count >= 8;
 								if (flag12)
 								{
-									soldeGeneral.PhoneCompte = Conversions.ToString(array3[0][7]);
+									soldeGeneral.PhoneCompte = Convert.ToString(array3[0][7]);
 								}
 								bool flag13 = m_tb.Columns.Count >= 9;
 								if (flag13)
 								{
-									soldeGeneral.emailCompte = Conversions.ToString(array3[0][8]);
+									soldeGeneral.emailCompte = Convert.ToString(array3[0][8]);
 								}
 							}
 						}
@@ -3523,7 +3278,7 @@ namespace Infosciences.Sage
 							if (flag14)
 							{
 								SoldeGeneral soldeGeneral2;
-								(soldeGeneral2 = soldeGeneral).REportCrediteur = Conversions.ToDecimal(Operators.AddObject(soldeGeneral2.REportCrediteur, dataRow3[3]));
+								(soldeGeneral2 = soldeGeneral).REportCrediteur = soldeGeneral2.REportCrediteur + Convert.ToDecimal(dataRow3[3]);
 							}
 						}
 						DataRow[] array5 = m_tb.Select("COMPTE='" + text + "' AND (EC_ANTYPE=0 AND JO_NUM<>'RAN') And EC_SENS=0");
@@ -3536,7 +3291,7 @@ namespace Infosciences.Sage
 								if (flag16)
 								{
 									SoldeGeneral soldeGeneral2;
-									(soldeGeneral2 = soldeGeneral).MontantMouvementsDebiteurs = Conversions.ToDecimal(Operators.AddObject(soldeGeneral2.MontantMouvementsDebiteurs, dataRow4[3]));
+									(soldeGeneral2 = soldeGeneral).MontantMouvementsDebiteurs = soldeGeneral2.MontantMouvementsDebiteurs + Convert.ToDecimal(dataRow4[3]);
 								}
 							}
 							bool flag17 = string.IsNullOrEmpty(soldeGeneral.NomCompte);
@@ -3545,17 +3300,17 @@ namespace Infosciences.Sage
 								bool flag18 = m_tb.Columns.Count >= 7;
 								if (flag18)
 								{
-									soldeGeneral.NomCompte = Conversions.ToString(array5[0][6]);
+									soldeGeneral.NomCompte = Convert.ToString(array5[0][6]);
 								}
 								bool flag19 = m_tb.Columns.Count >= 8;
 								if (flag19)
 								{
-									soldeGeneral.PhoneCompte = Conversions.ToString(array5[0][7]);
+									soldeGeneral.PhoneCompte = Convert.ToString(array5[0][7]);
 								}
 								bool flag20 = m_tb.Columns.Count >= 9;
 								if (flag20)
 								{
-									soldeGeneral.emailCompte = Conversions.ToString(array5[0][8]);
+									soldeGeneral.emailCompte = Convert.ToString(array5[0][8]);
 								}
 							}
 						}
@@ -3569,17 +3324,17 @@ namespace Infosciences.Sage
 								bool flag23 = m_tb.Columns.Count >= 7;
 								if (flag23)
 								{
-									soldeGeneral.NomCompte = Conversions.ToString(array7[0][6]);
+									soldeGeneral.NomCompte = Convert.ToString(array7[0][6]);
 								}
 								bool flag24 = m_tb.Columns.Count >= 8;
 								if (flag24)
 								{
-									soldeGeneral.PhoneCompte = Conversions.ToString(array7[0][7]);
+									soldeGeneral.PhoneCompte = Convert.ToString(array7[0][7]);
 								}
 								bool flag25 = m_tb.Columns.Count >= 9;
 								if (flag25)
 								{
-									soldeGeneral.emailCompte = Conversions.ToString(array7[0][8]);
+									soldeGeneral.emailCompte = Convert.ToString(array7[0][8]);
 								}
 							}
 						}
@@ -3589,7 +3344,7 @@ namespace Infosciences.Sage
 							if (flag26)
 							{
 								SoldeGeneral soldeGeneral2;
-								(soldeGeneral2 = soldeGeneral).MontantMouvementsCrediteurs = Conversions.ToDecimal(Operators.AddObject(soldeGeneral2.MontantMouvementsCrediteurs, dataRow5[3]));
+								(soldeGeneral2 = soldeGeneral).MontantMouvementsCrediteurs = soldeGeneral2.MontantMouvementsCrediteurs + Convert.ToDecimal(dataRow5[3]);
 							}
 						}
 						decimal num = decimal.Add(soldeGeneral.ReportDebiteur, soldeGeneral.MontantMouvementsDebiteurs);
@@ -3626,8 +3381,6 @@ namespace Infosciences.Sage
 			}
 			return list;
 		}
-
-		// Token: 0x060000DF RID: 223 RVA: 0x000092A8 File Offset: 0x000074A8
 		private SoldeGeneral _SoldesGenerauxBKCompteT(byte[] m_cbAcct, DateTime m_Date1, DateTime m_Date2, int m_CatEcr)
 		{
 			DataTable dataTable = this.m_oCat.ECRITURE_CalculerTotauxCBCompte(m_Date1, m_Date2, m_cbAcct, true, SENS_ECR.AUCUN);
@@ -3644,25 +3397,25 @@ namespace Infosciences.Sage
 				bool flag2 = array != null && array.GetLength(0) >= 1;
 				if (flag2)
 				{
-					soldeGeneral.ReportDebiteur = Conversions.ToDecimal(array[0][0]);
+					soldeGeneral.ReportDebiteur = Convert.ToDecimal(array[0][0]);
 				}
 				DataRow[] array2 = dataTable.Select("EC_ANTYPE=1 And EC_SENS=1");
 				bool flag3 = array2 != null && array2.GetLength(0) >= 1;
 				if (flag3)
 				{
-					soldeGeneral.REportCrediteur = Conversions.ToDecimal(array2[0][0]);
+					soldeGeneral.REportCrediteur = Convert.ToDecimal(array2[0][0]);
 				}
 				DataRow[] array3 = dataTable.Select("EC_ANTYPE=0 And EC_SENS=0");
 				bool flag4 = array3 != null && array3.GetLength(0) >= 1;
 				if (flag4)
 				{
-					soldeGeneral.MontantMouvementsDebiteurs = Conversions.ToDecimal(array3[0][0]);
+					soldeGeneral.MontantMouvementsDebiteurs = Convert.ToDecimal(array3[0][0]);
 				}
 				DataRow[] array4 = dataTable.Select("EC_ANTYPE=0 And EC_SENS=1");
 				bool flag5 = array4 != null && array4.GetLength(0) >= 1;
 				if (flag5)
 				{
-					soldeGeneral.MontantMouvementsCrediteurs = Conversions.ToDecimal(array4[0][0]);
+					soldeGeneral.MontantMouvementsCrediteurs = Convert.ToDecimal(array4[0][0]);
 				}
 				decimal num = decimal.Add(soldeGeneral.ReportDebiteur, soldeGeneral.MontantMouvementsDebiteurs);
 				decimal num2 = decimal.Add(soldeGeneral.REportCrediteur, soldeGeneral.MontantMouvementsCrediteurs);
@@ -3679,8 +3432,6 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x060000E0 RID: 224 RVA: 0x0000943C File Offset: 0x0000763C
 		public SoldeGeneral SoldesGenerauxCompteT(string m_Acct, DateTime m_Date1, DateTime m_Date2, int m_CatEcr)
 		{
 			clsClient clsClient = this.m_oCat.TIERS_LoadItem(m_Acct, CB_TYPE_TIERS.CB_TYPE_TIERS_CLIENT);
@@ -3709,8 +3460,6 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x060000E1 RID: 225 RVA: 0x00009510 File Offset: 0x00007710
 		public SoldeGeneral SoldesGenerauxBKCompteT(string m_bkAcct, DateTime m_Date1, DateTime m_Date2, int m_CatEcr)
 		{
 			clsClient clsClient = this.m_oCat.TIERS_CBLoadItem(m_bkAcct, CB_TYPE_TIERS.CB_TYPE_TIERS_CLIENT);
@@ -3739,8 +3488,6 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x060000E2 RID: 226 RVA: 0x000095E4 File Offset: 0x000077E4
 		public List<SoldeGeneral> BalanceTiers_BagFetch()
 		{
 			bool flag = this._soldeBag.Count == 0;
@@ -3771,8 +3518,6 @@ namespace Infosciences.Sage
 				return result;
 			}
 		}
-
-		// Token: 0x060000E3 RID: 227 RVA: 0x00009668 File Offset: 0x00007868
 		public List<SoldeGeneral> BalanceCompteTiers(DateTime m_Date1, DateTime m_Date2, int m_typeTiers, int m_CatEcr)
 		{
 			this._soldeBag = new List<SoldeGeneral>();
@@ -3841,8 +3586,6 @@ namespace Infosciences.Sage
 				return result;
 			}
 		}
-
-		// Token: 0x060000E4 RID: 228 RVA: 0x0000977C File Offset: 0x0000797C
 		public bool confirmWorkingACGateway()
 		{
 			bool flag = this._gw != null && this._gw.IsLinked() && this._gw.gwInstallationChecked();
@@ -3867,8 +3610,6 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x060000E5 RID: 229 RVA: 0x000097E8 File Offset: 0x000079E8
 		private void InitSecurity()
 		{
 			bool flag = this.confirmWorkingACGateway();
@@ -3911,8 +3652,6 @@ namespace Infosciences.Sage
 				}
 			}
 		}
-
-		// Token: 0x060000E6 RID: 230 RVA: 0x000098E8 File Offset: 0x00007AE8
 		public bool AuthenticateWithPassword(string m_pwd)
 		{
 			bool flag = this.confirmWorkingACGateway();
@@ -3939,7 +3678,7 @@ namespace Infosciences.Sage
 				{
 					PortableLoginService oLib = this.SecManager.oLib;
 					string text = oLib.User_from_psswd(m_pwd);
-					bool flag4 = Operators.CompareString(text, string.Empty, false) != 0;
+					bool flag4 = !string.Equals(text, string.Empty, StringComparison.Ordinal);
 					if (flag4)
 					{
 						this._UserLogged = true;
@@ -3959,8 +3698,6 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x060000E7 RID: 231 RVA: 0x000099A4 File Offset: 0x00007BA4
 		public ISApplicationUser getAuthenticatedUser()
 		{
 			bool userLogged = this._UserLogged;
@@ -3979,19 +3716,13 @@ namespace Infosciences.Sage
 			}
 			return null;
 		}
-
-		// Token: 0x060000E8 RID: 232 RVA: 0x000099F8 File Offset: 0x00007BF8
 		public bool CheckUserLooged()
 		{
 			return this._UserLogged;
 		}
-
-		// Token: 0x14000002 RID: 2
 		// (add) Token: 0x060000E9 RID: 233 RVA: 0x00009A10 File Offset: 0x00007C10
 		// (remove) Token: 0x060000EA RID: 234 RVA: 0x00009A48 File Offset: 0x00007C48
 		public event SageAccService.EchecOperation_ADEventHandler EchecOperation_AD;
-
-		// Token: 0x060000EB RID: 235 RVA: 0x00009A80 File Offset: 0x00007C80
 		public List<ISApplicationUser> downLoadSystemUsers()
 		{
 			this.m_EventLog.WriteEntry("downLoadSystemUsers: domain   ...");
@@ -4006,10 +3737,10 @@ namespace Infosciences.Sage
 				string message = ex.Message;
 				text2 = "";
 			}
-			bool flag = Operators.CompareString(text2, string.Empty, false) == 0;
+			bool flag = string.Equals(text2, string.Empty, StringComparison.Ordinal);
 			if (flag)
 			{
-				text = "WinNT://" + MyProject.Computer.Name;
+				text = "WinNT://" + Environment.MachineName;
 				text2 = "(local)";
 				this.m_EventLog.WriteEntry(string.Format("downLoadSystemUsers: Not Found domain {0} ", text2));
 			}
@@ -4062,8 +3793,8 @@ namespace Infosciences.Sage
 						SearchResult searchResult = (SearchResult)obj;
 						ISApplicationUser isapplicationUser = new ISApplicationUser();
 						DirectoryEntry directoryEntry = searchResult.GetDirectoryEntry();
-						isapplicationUser.USERCODE = Conversions.ToString(directoryEntry.Properties["SAMAccountName"].Value);
-						isapplicationUser.USERFULLNAME = Conversions.ToString(directoryEntry.Properties["sn"].Value);
+						isapplicationUser.USERCODE = Convert.ToString(directoryEntry.Properties["SAMAccountName"].Value);
+						isapplicationUser.USERFULLNAME = Convert.ToString(directoryEntry.Properties["sn"].Value);
 						list.Add(isapplicationUser);
 					}
 				}
@@ -4079,8 +3810,6 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x060000EC RID: 236 RVA: 0x00009D00 File Offset: 0x00007F00
 		public void DeleteSiteUser(string userCode)
 		{
 			bool flag = this.confirmWorkingACGateway();
@@ -4094,8 +3823,6 @@ namespace Infosciences.Sage
 				oLib.ISAPPLICATIONUSER_DELETEItem(userCode);
 			}
 		}
-
-		// Token: 0x060000ED RID: 237 RVA: 0x00009D40 File Offset: 0x00007F40
 		public List<ISApplicationUser> DownLoadSiteUsers()
 		{
 			bool flag = this.confirmWorkingACGateway();
@@ -4159,8 +3886,6 @@ namespace Infosciences.Sage
 			}
 			return null;
 		}
-
-		// Token: 0x060000EE RID: 238 RVA: 0x00009EE0 File Offset: 0x000080E0
 		public bool SaveSiteUser(ISApplicationUser SiteUserInfo)
 		{
 			bool flag = this.confirmWorkingACGateway();
@@ -4198,21 +3923,15 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x060000EF RID: 239 RVA: 0x00009F8C File Offset: 0x0000818C
 		public string SiteUserName()
 		{
 			return Thread.CurrentPrincipal.Identity.Name;
 		}
-
-		// Token: 0x060000F0 RID: 240 RVA: 0x00009FB0 File Offset: 0x000081B0
 		public string SiteUserRole()
 		{
 			string result;
 			return result;
 		}
-
-		// Token: 0x060000F1 RID: 241 RVA: 0x00009FC0 File Offset: 0x000081C0
 		private string _getUserRoleForApplication(string s)
 		{
 			bool flag = this.confirmWorkingACGateway();
@@ -4249,8 +3968,6 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x060000F2 RID: 242 RVA: 0x0000A078 File Offset: 0x00008278
 		public bool[][] SiteUserExecutionProfile(string userKey)
 		{
 			string right = WindowsIdentity.GetCurrent().Name.ToString();
@@ -4266,7 +3983,7 @@ namespace Infosciences.Sage
 			}
 			else
 			{
-				bool flag2 = Operators.CompareString(userKey, right, false) == 0;
+				bool flag2 = string.Equals(userKey, right, StringComparison.Ordinal);
 				if (flag2)
 				{
 					result = new bool[][]
@@ -4289,11 +4006,11 @@ namespace Infosciences.Sage
 				else
 				{
 					string left = this._getUserRoleForApplication(userKey);
-					if (Operators.CompareString(left, "_APP_ADMINS", false) != 0)
+					if (!string.Equals(left, "_APP_ADMINS", StringComparison.Ordinal))
 					{
-						if (Operators.CompareString(left, "_APP_ALL_DOMAINS", false) != 0)
+						if (!string.Equals(left, "_APP_ALL_DOMAINS", StringComparison.Ordinal))
 						{
-							if (Operators.CompareString(left, "APP_CLIENT_DOMAIN", false) != 0)
+							if (!string.Equals(left, "APP_CLIENT_DOMAIN", StringComparison.Ordinal))
 							{
 								result = new bool[][]
 								{
@@ -4353,8 +4070,6 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x060000F3 RID: 243 RVA: 0x0000A1DC File Offset: 0x000083DC
 		private ISApplicationUser _createNewApplicationUser(infouser u)
 		{
 			bool flag = u == null;
@@ -4410,8 +4125,6 @@ namespace Infosciences.Sage
 				return result;
 			}
 		}
-
-		// Token: 0x060000F4 RID: 244 RVA: 0x0000A2A0 File Offset: 0x000084A0
 		private void _callback(object state)
 		{
 			CompletedAsyncResult<glQryInfo> completedAsyncResult = new CompletedAsyncResult<glQryInfo>((glQryInfo)state);
@@ -4422,8 +4135,6 @@ namespace Infosciences.Sage
 			{
 			}
 		}
-
-		// Token: 0x060000F5 RID: 245 RVA: 0x0000A2E0 File Offset: 0x000084E0
 		private void _gl_calculer(int m_typeTiers, DateTime m_Date1, DateTime m_Date2)
 		{
 			bool flag = true;
@@ -4507,8 +4218,6 @@ namespace Infosciences.Sage
 				}
 			}
 		}
-
-		// Token: 0x060000F6 RID: 246 RVA: 0x0000A4D8 File Offset: 0x000086D8
 		private void _gl_CalculerCompte(string m_Acct, int m_typeTiers, DateTime m_Date1, DateTime m_Date2)
 		{
 			bool flag = true;
@@ -4592,8 +4301,6 @@ namespace Infosciences.Sage
 				}
 			}
 		}
-
-		// Token: 0x060000F7 RID: 247 RVA: 0x0000A6C8 File Offset: 0x000088C8
 		private void _endGL_Calculer(IAsyncResult ar)
 		{
 			this.__bGLLoading = false;
@@ -4604,8 +4311,6 @@ namespace Infosciences.Sage
 				this.__bGLLoadErrStat = false;
 			}
 		}
-
-		// Token: 0x060000F8 RID: 248 RVA: 0x0000A700 File Offset: 0x00008900
 		private void _endGL_CalculerCompte(IAsyncResult ar)
 		{
 			this.__bGLLoading = false;
@@ -4616,8 +4321,6 @@ namespace Infosciences.Sage
 				this.__bGLLoadErrStat = false;
 			}
 		}
-
-		// Token: 0x060000F9 RID: 249 RVA: 0x0000A738 File Offset: 0x00008938
 		public List<LigneGL> gl_Calculer_Compte(string m_Acct, int m_typeTiers, DateTime m_Date1, DateTime m_Date2)
 		{
 			bool _bGLLoading = this.__bGLLoading;
@@ -4659,7 +4362,7 @@ namespace Infosciences.Sage
 						this.__bGLLoadComplete = false;
 						this._fnLoadGLAcc = new SageAccService.dlgt_GLLoadAcc(this._gl_CalculerCompte);
 						this._clbkLoadJnal = new AsyncCallback(this._endGL_CalculerCompte);
-						this._fnLoadGLAcc.BeginInvoke(m_Acct, m_typeTiers, m_Date1, m_Date2, this._clbkLoadGL, RuntimeHelpers.GetObjectValue(this._loadGLBag));
+						this._fnLoadGLAcc.BeginInvoke(m_Acct, m_typeTiers, m_Date1, m_Date2, this._clbkLoadGL, this._loadGLBag);
 						this.__bGLLoading = true;
 						List<LigneGL> list2 = new List<LigneGL>
 						{
@@ -4674,8 +4377,6 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x060000FA RID: 250 RVA: 0x0000A864 File Offset: 0x00008A64
 		public List<LigneGL> gl_Calculer(int m_typeTiers, DateTime m_Date1, DateTime m_Date2)
 		{
 			bool _bGLLoading = this.__bGLLoading;
@@ -4717,7 +4418,7 @@ namespace Infosciences.Sage
 						this.__bGLLoadComplete = false;
 						this._fnLoadGL = new SageAccService.dlgt_GLLoad(this._gl_calculer);
 						this._clbkLoadJnal = new AsyncCallback(this._endGL_Calculer);
-						this._fnLoadGL.BeginInvoke(m_typeTiers, m_Date1, m_Date2, this._clbkLoadGL, RuntimeHelpers.GetObjectValue(this._loadGLBag));
+						this._fnLoadGL.BeginInvoke(m_typeTiers, m_Date1, m_Date2, this._clbkLoadGL, this._loadGLBag);
 						this.__bGLLoading = true;
 						List<LigneGL> list2 = new List<LigneGL>
 						{
@@ -4732,8 +4433,6 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x060000FB RID: 251 RVA: 0x0000A98C File Offset: 0x00008B8C
 		public List<LigneGL> GLBagFetch()
 		{
 			bool flag = this._GLLGBag.Count == 0;
@@ -4764,8 +4463,6 @@ namespace Infosciences.Sage
 				return result;
 			}
 		}
-
-		// Token: 0x060000FC RID: 252 RVA: 0x0000AA10 File Offset: 0x00008C10
 		public int JOURNAL_CreateEcritureCentralisation(string mJnal, DateTime dDate, int sns)
 		{
 			DateTime jm_DATE = new DateTime(dDate.Year, dDate.Month, 1);
@@ -4808,8 +4505,6 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x060000FD RID: 253 RVA: 0x0000AB50 File Offset: 0x00008D50
 		public Imputation[] JOURNAL_LoadCentralisationsMois(string mJnal, DateTime mDate)
 		{
 			clsCbEcritureComptable_Collection clsCbEcritureComptable_Collection = this.m_oCat.ECRITURE_LoadCentralisationJournalTresorMois(mJnal, mDate);
@@ -4841,14 +4536,10 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x060000FE RID: 254 RVA: 0x0000ABD8 File Offset: 0x00008DD8
 		public bool IMPUTATION_DeLettrage(int m_Id)
 		{
 			return this.m_oCat.ECRITURE_DecloturerEc(m_Id) > 0;
 		}
-
-		// Token: 0x060000FF RID: 255 RVA: 0x0000ABFC File Offset: 0x00008DFC
 		private GLBagInfo __calculerPlage(string m_Acct1, string m_Acct2, int m_typeTiers, DateTime m_Date1, DateTime m_Date2)
 		{
 			bool flag = true;
@@ -4927,213 +4618,83 @@ namespace Infosciences.Sage
 				return result;
 			}
 		}
-
-		// Token: 0x04000035 RID: 53
 		private string m_SiteVersion;
-
-		// Token: 0x04000036 RID: 54
 		private int _MAXRET;
-
-		// Token: 0x04000037 RID: 55
 		private int _DOCMAXRET;
-
-		// Token: 0x04000038 RID: 56
 		private SageNetServices m_oCat;
-
-		// Token: 0x04000039 RID: 57
 		private SageAccService.APPLICATION_FAMILY m_ApplicationFamily;
-
-		// Token: 0x0400003A RID: 58
 		private string m_DossierSage;
-
-		// Token: 0x0400003B RID: 59
 		private int m_Nodepot;
-
-		// Token: 0x0400003C RID: 60
 		private string m_SectionAnalityt;
-
-		// Token: 0x0400003E RID: 62
 		private string m_LastComment;
-
-		// Token: 0x0400003F RID: 63
 		private CIALDefaults m_CPTASales;
-
-		// Token: 0x04000042 RID: 66
 		private acSession _acSession;
-
-		// Token: 0x04000043 RID: 67
 		private TransactionLogService _sessionLogger;
-
-		// Token: 0x04000044 RID: 68
 		private int _sessionID;
-
-		// Token: 0x04000045 RID: 69
 		protected StringBuilder _transmissionLog;
-
-		// Token: 0x04000046 RID: 70
 		protected StringBuilder _JobLog;
-
-		// Token: 0x04000047 RID: 71
 		private object cbEcrObj;
-
-		// Token: 0x04000048 RID: 72
 		private AsyncCallback clbkLaodEcr;
-
-		// Token: 0x04000049 RID: 73
 		private SageAccService.dlgt_LoadEcriture fnLoadEcr;
-
-		// Token: 0x0400004A RID: 74
 		private bool bFnExecuting;
-
-		// Token: 0x0400004B RID: 75
 		private bool __bImputationLoading;
-
-		// Token: 0x0400004C RID: 76
 		private bool __bImputationLoadComplete;
-
-		// Token: 0x0400004D RID: 77
 		private bool __bLoadErrStat;
-
-		// Token: 0x0400004E RID: 78
 		private ImputationTransmission __imputationTransResults;
-
-		// Token: 0x0400004F RID: 79
 		private SageAccService.dlgt_ImputationLoadJnal _fnLoadJnal;
-
-		// Token: 0x04000050 RID: 80
 		private AsyncCallback _clbkLoadJnal;
-
-		// Token: 0x04000051 RID: 81
 		private object _loadJnalBag;
-
-		// Token: 0x04000052 RID: 82
 		private accJobLogCollection _accjobLog;
-
-		// Token: 0x04000053 RID: 83
 		private acAction_Collection __actions;
-
-		// Token: 0x04000054 RID: 84
 		private Task<int> _tsk;
-
-		// Token: 0x04000055 RID: 85
 		private int _tskValue;
-
-		// Token: 0x04000056 RID: 86
 		private List<TiersComptable> m_TiersBag;
-
-		// Token: 0x04000057 RID: 87
 		private List<Imputation> m_ImputationBag;
-
-		// Token: 0x04000058 RID: 88
 		private int m_WriteLockedState;
-
-		// Token: 0x04000059 RID: 89
 		private bool _IsInLogOnlyMode;
-
-		// Token: 0x0400005A RID: 90
 		private SageAccService.dlgt_ECRSJob fnImputationsCreationJob;
-
-		// Token: 0x0400005B RID: 91
 		private AsyncCallback clbkImpsCreation;
-
-		// Token: 0x0400005C RID: 92
 		private object objImpCr;
-
-		// Token: 0x0400005D RID: 93
 		private jobResult _jobImputationResult;
-
-		// Token: 0x0400005F RID: 95
 		private List<SoldeGeneral> _soldeBag;
-
-		// Token: 0x04000060 RID: 96
 		private string _instanceUserKey;
-
-		// Token: 0x04000061 RID: 97
 		private SecurityGateway _gw;
-
-		// Token: 0x04000062 RID: 98
 		private AuthManager SecManager;
-
-		// Token: 0x04000063 RID: 99
 		private bool _UserLogged;
-
-		// Token: 0x04000065 RID: 101
 		private List<LigneGL> _GLLGBag;
-
-		// Token: 0x04000066 RID: 102
 		private GLBagInfo _glResults;
-
-		// Token: 0x04000067 RID: 103
 		private bool __bGLLoading;
-
-		// Token: 0x04000068 RID: 104
 		private bool __bGLLoadComplete;
-
-		// Token: 0x04000069 RID: 105
 		private bool __bGLLoadErrStat;
-
-		// Token: 0x0400006A RID: 106
 		private SageAccService.dlgt_GLLoadAcc _fnLoadGLAcc;
-
-		// Token: 0x0400006B RID: 107
 		private AsyncCallback _clbkLoadGL;
-
-		// Token: 0x0400006C RID: 108
 		private object _loadGLBag;
-
-		// Token: 0x0400006D RID: 109
 		private SageAccService.dlgt_GLLoad _fnLoadGL;
-
-		// Token: 0x0400006E RID: 110
 		private string _ObeapiUrl;
-
-		// Token: 0x0200001A RID: 26
 		public enum APPLICATION_FAMILY
 		{
-			// Token: 0x0400008C RID: 140
 			TOPCOM,
-			// Token: 0x0400008D RID: 141
 			SAGESQL,
-			// Token: 0x0400008E RID: 142
 			SAGECBASE
 		}
-
-		// Token: 0x0200001B RID: 27
 		// (Invoke) Token: 0x0600014E RID: 334
 		public delegate void DSLinkAvailabilityChangedEventHandler(bool changedToGood);
-
-		// Token: 0x0200001C RID: 28
 		// (Invoke) Token: 0x06000152 RID: 338
 		public delegate clsCbEcritureComptable_Collection dlgt_LoadEcriture(string m_CodeJnal, string srch, DateTime m_date1, DateTime m_date2);
-
-		// Token: 0x0200001D RID: 29
 		// (Invoke) Token: 0x06000156 RID: 342
 		public delegate int dlgt_ImputationLoadJnal(string m_CodeJnal, DateTime m_date1, DateTime m_date2);
-
-		// Token: 0x0200001E RID: 30
 		// (Invoke) Token: 0x0600015A RID: 346
 		public delegate int dlgt_ECRSJob(IEnumerable<Imputation> imps);
-
-		// Token: 0x0200001F RID: 31
 		public enum USER_CHECK_STATE
 		{
-			// Token: 0x04000090 RID: 144
 			UNREGISTERD_ON_SITE,
-			// Token: 0x04000091 RID: 145
 			UNKNOWN = -1,
-			// Token: 0x04000092 RID: 146
 			KNOWN_AND_REGISTERED = 1
 		}
-
-		// Token: 0x02000020 RID: 32
 		// (Invoke) Token: 0x0600015E RID: 350
 		public delegate void EchecOperation_ADEventHandler(string m_Msg);
-
-		// Token: 0x02000021 RID: 33
 		// (Invoke) Token: 0x06000162 RID: 354
 		public delegate void dlgt_GLLoadAcc(string m_Acct, int m_typeTiers, DateTime m_Date1, DateTime m_Date2);
-
-		// Token: 0x02000022 RID: 34
 		// (Invoke) Token: 0x06000166 RID: 358
 		public delegate void dlgt_GLLoad(int m_typeTiers, DateTime m_Date1, DateTime m_Date2);
 	}

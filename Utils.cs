@@ -1,16 +1,12 @@
-﻿using System;
+using System;
 using System.IO;
 using IniParser;
 using IniParser.Model;
-using Microsoft.VisualBasic.CompilerServices;
 
 namespace Infosciences.Sage
 {
-	// Token: 0x02000016 RID: 22
-	[StandardModule]
 	internal sealed class Utils
 	{
-		// Token: 0x0600013F RID: 319 RVA: 0x0000D1A0 File Offset: 0x0000B3A0
 		public static void SaveMaxRets(int _docmaxrets)
 		{
 			bool flag = !Directory.Exists(Utils.ServerRepository);
@@ -31,8 +27,6 @@ namespace Infosciences.Sage
 			iniData["Currents"]["docmaxrets"] = _docmaxrets.ToString();
 			fileIniDataParser.WriteFile(text2, iniData, null);
 		}
-
-		// Token: 0x06000140 RID: 320 RVA: 0x0000D248 File Offset: 0x0000B448
 		public static int LoadMaxRet()
 		{
 			bool flag = !Directory.Exists(Utils.ServerRepository);
@@ -86,14 +80,8 @@ namespace Infosciences.Sage
 			}
 			return result;
 		}
-
-		// Token: 0x04000082 RID: 130
 		private static string ServerRepository = "c:\\Infoscienceservers";
-
-		// Token: 0x04000083 RID: 131
 		private static string ApplicationRepository = "accountscentral";
-
-		// Token: 0x04000084 RID: 132
 		private static string obeClientfile = "transactionsettings.ini";
 	}
 }
